@@ -1,3 +1,18 @@
 spring:
   application:
     name: CafeManagement
+
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=cafe_management;encrypt=true;trustServerCertificate=true
+    username: root
+    password: Cafe@123456
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  thymeleaf:
+    cache: false

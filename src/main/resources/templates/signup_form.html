@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Thêm nhân viên</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
+
+</head>
+<body>
+<div class="container text-center">
+   <div>
+       <div>
+           <h1>Thêm nhân viên</h1>
+       </div>
+       <div class="row mt-3">
+           <div class="col-10">
+               <form th:action="@{process_register}" method="post"
+                     th:object="${user}"
+                     style="margin: 0 auto;"
+               >
+                   <div >
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Họ và tên</label>
+                           <div class="col-9">
+                               <input type="email" class="form-control">
+                           </div>
+                       </div>
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Địa chỉ</label>
+                           <div class="col-9">
+                               <input type="email" class="form-control">
+                           </div>
+                       </div>
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Số điện thoại</label>
+                           <div class="col-9">
+                               <input type="email" class="form-control">
+                           </div>
+                       </div>
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Tên đăng nhập</label>
+                           <div class="col-9">
+                               <input type="email" class="form-control">
+                           </div>
+                       </div>
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Mật khẩu</label>
+                           <div class="col-9">
+                               <input type="email" class="form-control">
+                           </div>
+                       </div>
+                       <div class="form-group row">
+                           <label class="form-col-label col-3 text-left">Chức vụ</label>
+                           <div class="col-9 text-left">
+                               <select class="form-select">
+                                   <option selected disabled>Chức vụ</option>
+                                   <option value="1">Manager</option>
+                                   <option value="2">Counter</option>
+                               </select>
+                           </div>
+                       </div>
+                   </div>
+               </form>
+               <div class="mt-4">
+                   <input type="submit" class="btn btn-primary mr-4" value="Thêm"></input>
+                   <button class="btn btn-danger">Hủy</button>
+               </div>
+           </div>
+           <div class="col-2">
+               <div>
+                   <img th:src="@{/img/default.png}" class="bg-white" width="120px" height="auto">
+               </div>
+               <div>
+                   <input type="file" id="form-file" class="d-none">
+                   <label for="form-file" class="btn-sm btn-secondary mt-3">Thay đổi...</label>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+</body>
+</html>
