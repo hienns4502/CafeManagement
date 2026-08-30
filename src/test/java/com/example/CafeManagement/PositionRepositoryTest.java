@@ -1,6 +1,7 @@
 package com.example.CafeManagement;
 
 import com.example.CafeManagement.Entity.Position;
+import com.example.CafeManagement.Repository.EmployeeRepository;
 import com.example.CafeManagement.Repository.PositionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +18,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PositionRepositoryTest {
     @Autowired
     private PositionRepository positionRepository;
-
+    @Autowired
+    private EmployeeRepository employeeRepository;
     @Autowired
     private TestEntityManager testEntityManager;
 
     @Test
     public void testCreatePosition(){
         Position position = new Position();
-        position.setChucVu("Counter");
-        position.setLuong(8000000);
+        position.setChucVu("Manager");
+        position.setLuong(12000000);
         Position savedPosition =  positionRepository.save(position);
         Position foundPosition = testEntityManager.find(Position.class, savedPosition.getId());
 
         assertThat(foundPosition.getId()).isEqualTo(savedPosition.getId());
-
-
+    }
+    @Test
+    public void testFindByUserName(){
+        String username = "lananh";
+        employeeRepository.findByUsername(username);
+        assertThat(employeeRepository.findByUsername(username)).isNotNull();
     }
 }

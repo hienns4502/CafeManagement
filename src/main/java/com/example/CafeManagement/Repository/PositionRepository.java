@@ -1,5 +1,6 @@
 package com.example.CafeManagement.Repository;
 
+import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.Position;
 import org.springframework.data.jpa.repository.JpaRepository;
 

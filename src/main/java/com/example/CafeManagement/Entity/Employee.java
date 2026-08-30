@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -25,7 +26,7 @@ public class Employee {
     String diaChi;
     @Column(nullable = false, columnDefinition = "VARCHAR(10)")
     String soDienThoai;
-    String pathAvatar;
+    String pathAvatar = "/img/default.png";
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id", nullable = false)
     Position position;

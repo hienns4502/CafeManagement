@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "persition")
+@Table(name = "position")
 public class Position {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
