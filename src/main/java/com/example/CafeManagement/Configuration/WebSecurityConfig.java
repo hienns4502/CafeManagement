@@ -37,7 +37,9 @@ public class WebSecurityConfig {
         http.authenticationProvider(authenticationProvider());
 
         http.authorizeHttpRequests(auth ->
-                        auth.anyRequest().authenticated()
+
+                        auth.requestMatchers("/delete/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(login ->
                         login.usernameParameter("username")
@@ -46,7 +48,8 @@ public class WebSecurityConfig {
                 )
                 .logout(logout ->
                         logout.logoutSuccessUrl("/login").permitAll()
-                );
+                )
+        ;
 
         return http.build();
     }

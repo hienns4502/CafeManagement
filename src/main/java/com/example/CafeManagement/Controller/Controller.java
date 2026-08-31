@@ -4,6 +4,7 @@ import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.Position;
 import com.example.CafeManagement.Repository.EmployeeRepository;
 import com.example.CafeManagement.Repository.PositionRepository;
+import com.example.CafeManagement.Service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +33,8 @@ public class Controller {
     PositionRepository positionRepository;
     @Autowired
     EmployeeRepository employeeRepository;
+    @Autowired
+    EmployeeService employeeService;
 
     @GetMapping("")
     public String index() {
@@ -46,39 +50,15 @@ public class Controller {
     }
 
     @PostMapping("/process_register")
-    @ResponseBody
     public String processSignUpForm(
             Employee employee,
             @RequestParam("positionId") String positionId,
-            @RequestParam(value = "avatarFile", required = false) MultipartFile file
+            @RequestParam(value = "avatarFile", required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes
     ) throws IOException {
-        // mã hóa mk
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        //lưu file đã upload vào local storage
-        // kiểm tra xem người dùng có upload file ảnh lên không
-        // nếu có mới lưu
-        Path filePath = null;
-        if (file != null && !file.isEmpty()) {
-            Path folder = Paths.get("F:\\OnTapSQL\\BaiLam\\QuanLyQuanCafe\\uploads");
-            String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-            String fileName = Objects.isNull(fileExtension)
-                    ? UUID.randomUUID().toString()
-                    : UUID.randomUUID().toString() + "." + fileExtension;
-            filePath = folder.resolve(fileName).normalize().toAbsolutePath();
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        if (filePath != null) {
-            employee.setPathAvatar(filePath.toString());
-        }
-        Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position Not Found"));
-        employee.setPosition(position);
-
-        employeeRepository.save(employee);
-
-        // In ra màn hình trình duyệt để xem
-        return "Đăng ký thành công! Employee: " + employee.toString() + " | Position ID: " + positionId
-                + "    file " + filePath;
+        employeeService.createEmployee(employee, positionId, file);
+        redirectAttributes.addFlashAttribute("successMessage", "Employee created successfully");
+        return  "redirect:/employees";
     }
 
     @GetMapping("/employees")
@@ -86,5 +66,12 @@ public class Controller {
         List<Employee> employees = employeeRepository.findAll();
         model.addAttribute("listEmployees", employees);
         return "employees";
+    }
+
+    @GetMapping("/employees/delete/{id}")
+    public String deleteEmployee(@PathVariable("id") String id, RedirectAttributes redirectAttributes) {
+        employeeService.deleteEmployee(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Employee deleted successfully");
+        return "redirect:/employees";
     }
 }

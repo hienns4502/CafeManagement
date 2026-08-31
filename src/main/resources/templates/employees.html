@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh sách nhân viên</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
@@ -14,16 +16,37 @@
             <th>Họ tên</th>
             <th>Chức vụ</th>
             <th>Lương</th>
+            <th style="width: 1%; white-space: nowrap;">Hành động</th>
             </thead>
             <tbody>
             <tr th:each="employee : ${listEmployees}">
                 <td th:text="${employee.hoTen}"></td>
                 <td th:text="${employee.position.chucVu}"></td>
                 <td th:text="${#numbers.formatDecimal(employee.position.luong, 0, 'COMMA', 0, 'POINT')}"></td>
+                <td style="width: 1%; white-space: nowrap;">
+                    <a th:href="@{|/employees/delete/${employee.id}|}"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này không?');"
+                       class="btn btn-danger btn-sm mr-1">
+                        <i class="fa-solid fa-trash"></i> Xóa
+                    </a>
+                    <a th:href="@{|/employees/delete/${employee.id}|}"
+                       class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-pencil"></i> Cập nhật
+                    </a>
+
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+<script th:if="${successMessage}">
+    Swal.fire({
+        title: "Thành công!",
+        text: "[[${successMessage}]]",
+        icon: "success",
+        confirmButtonText: "OK"
+    });
+</script>
 </body>
 </html>
