@@ -26,7 +26,9 @@ public class CustomUserDetails implements UserDetails {
     public String getHoTen() {
         return employee.getHoTen();
     }
-
+    public String getId() {
+        return employee.getId();
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Position position = employee.getPosition();

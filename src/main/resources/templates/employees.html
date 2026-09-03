@@ -33,7 +33,7 @@
                             <td th:text="${employee.position.chucVu}"></td>
                             <td th:text="${#numbers.formatDecimal(employee.position.luong, 0, 'COMMA', 0, 'POINT')}"></td>
                             <td style="width: 1%; white-space: nowrap;">
-                                <a th:href="@{|manager/employees/delete/${employee.id}|}"
+                                <a th:href="@{|/manager/employees/delete/${employee.id}|}"
                                    onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này không?');"
                                    class="btn btn-danger btn-sm mr-1">
                                     <i class="fa-solid fa-trash"></i> Xóa

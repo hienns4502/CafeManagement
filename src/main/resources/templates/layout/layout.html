@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
 <head>
 
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body style="overflow-y: scroll;">
 <div class="container">
     <div>
+        <div>
+            <h1 th:text="${title}"></h1>
+        </div>
         <div class="row">
             <div class="col-3">
                 <div class="border p-2 h-100"> <!-- Đưa border và padding vào đây -->
                     <div th:insert="fragments/sidebar :: sidebar"></div>
                 </div>
             </div>
-            <div class="col-9 text-center">
-                <div class="border p-3 h-100" layout:fragment="content">
+            <div class="col-9 text-center " style="height: 90vh">
+                <div class="border p-3 h-100 bg-primary-custom" layout:fragment="content">
 
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script th:if="${successMessage}">
+    Swal.fire({
+        title: "Thành công!",
+        text: "[[${successMessage}]]",
+        icon: "success",
+        confirmButtonText: "OK"
+    });
+</script>
 <!-- Thư viện jQuery và Bootstrap 4 JS bắt buộc phải có cho tính năng Collapse -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
