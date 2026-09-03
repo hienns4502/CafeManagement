@@ -1,21 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Trang chủ</title>
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
 
 </head>
-<body>
+<body style="overflow-y: scroll;">
 <div class="container">
-    <h1>hello every body</h1>
-    <button class="btn btn-primary">click me</button>
     <div>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">Logout</button>
-        </form>
+        <div>
+            <h1>Trang chủ</h1>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="border p-2 h-100"> <!-- Đưa border và padding vào đây -->
+                    <div th:insert="fragments/sidebar :: sidebar"></div>
+                </div>
+            </div>
+            <div class="col-9 text-center " style="height: 90vh">
+                <div class="border h-100" >
+                    <div class="d-flex justify-content-center align-items-center flex-column"
+                            style="
+                    width: 100%;
+                    height: 100%;
+                    background-image: linear-gradient(90deg, rgba(55, 32, 20, .92), rgba(55, 32, 20, .55), rgba(55, 32, 20, .15)), url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1400&q=85');
+                    background-size: cover;
+                    background-position: center;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);">
+                        <h1 class="text-white">
+                            Xin chào,
+                            <sp sec:authentication="principal.hoTen">Name</sp>
+                            !
+                        </h1>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<!-- Thư viện jQuery và Bootstrap 4 JS bắt buộc phải có cho tính năng Collapse -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script th:src="@{/js/index.js}"></script>
+
 </body>
 </html>

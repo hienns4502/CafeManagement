@@ -1,0 +1,213 @@
+<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="list-group list-group-flush border rounded overflow-hidden text-left">
+
+        <a th:href="@{/}" class="list-group-item list-group-item-action border-bottom"
+           th:classappend="${activeParent == 'trangChu'} ? 'active' : ''"
+        >Trang chủ</a>
+        <a th:href="@{/profile}" class="list-group-item list-group-item-action border-bottom"
+           th:classappend="${activeParent == 'trangCaNhan'} ? 'active' : ''"
+        >Trang cá nhân</a>
+
+        <!--       Quản lý bán hàng-->
+        <a class="list-group-item list-group-item-action border-bottom mb-0"
+           th:classappend="${activeParent == 'trangCaNhan'} ? 'active' : ''"
+        >Quản lý bán hàng</a>
+
+        <div class=""
+             sec:authorize="hasRole('ADMIN')"
+        >
+            <!--        Quản lý nhân viên-->
+            <a href="#nhanVienSubMenu" data-toggle="collapse"  aria-expanded="true"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'nhanVien'} ? 'active' : ''"
+            >
+                Quản lý nhân viên
+                <span>▼</span>
+            </a>
+
+            <!-- Khối chứa các mục con (Dùng collapse show để mở sẵn nếu đang ở trang con) -->
+            <div class="collapse " id="nhanVienSubMenu"
+                 th:classappend="${activeParent == 'nhanVien'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <!-- Chỉ các thẻ con bên trong mới dùng th:href để chuyển trang -->
+                    <a th:href="@{/manager/employees}"
+                       class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'nhanVien-list'} ? 'bg-custom-active' : ''"
+                    >Xem danh sách nhân viên</a>
+                    <a th:href="@{/manager/employees/add}"
+                       class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'nhanVien-add'} ? 'bg-custom-active' : ''"
+                    >Thêm nhân viên</a>
+                </div>
+            </div>
+
+            <!-- Các mục quản lý đơn lẻ khác -->
+            <a href="#thietBiSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'thietBi'} ? 'active' : ''"
+            >
+                Quản lý trang thiết bị
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="thietBiSubMenu"
+                 th:classappend="${activeParent == 'thietBi'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'thietBi-list'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem danh sách thiết bị
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'thietBi-add'} ? 'bg-primary text-white' : ''"
+                    >
+                        Thêm thiết bị
+                    </a>
+                </div>
+            </div>
+
+            <!--        Quản lý kho hàng-->
+            <a href="#khoHangSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'khoHang'} ? 'active' : ''"
+            >
+                Quản lý kho hàng
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="khoHangSubMenu"
+                 th:classappend="${activeParent == 'khoHang'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'hangHoa-list'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem danh sách hàng
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'hangHoa-import'} ? 'bg-primary text-white' : ''"
+                    >
+                        Nhập hàng hóa
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'hangHoa-export'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xuất hàng hóa
+                    </a>
+                </div>
+            </div>
+
+            <!--        Quản lý thực đơn-->
+            <a href="#thucDonSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'thucDon'} ? 'active' : ''"
+            >
+                Quản lý thực đơn
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="thucDonSubMenu"
+                 th:classappend="${activeParent == 'thucDon'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'thucDon-list'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem danh sách thực đơn
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'thucDon-add'} ? 'bg-primary text-white' : ''"
+                    >
+                        Thêm danh mục
+                    </a>
+                </div>
+            </div>
+
+            <!--        Quản lý marketing-->
+            <a href="#marketingSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'marketing'} ? 'active' : ''"
+            >
+                Quản lý Marketing
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="marketingSubMenu"
+                 th:classappend="${activeParent == 'marketing'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'marketing-list'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem danh sách khuyến mãi
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'marketing-add'} ? 'bg-primary text-white' : ''"
+                    >
+                        Thêm khuyến mãi
+                    </a>
+                </div>
+            </div>
+
+            <!--        Quản lý ngân sách-->
+            <a href="#nganSachSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'nganSach'} ? 'active' : ''"
+            >
+                Quản lý ngân sách
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="nganSachSubMenu"
+                 th:classappend="${activeParent == 'nganSach'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'nganSach-thuChi'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem thu chi
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'nganSach-chiTieu'} ? 'bg-primary text-white' : ''"
+                    >
+                        Xem chi tiêu
+                    </a>
+                </div>
+            </div>
+
+            <!--        Quản lý dữ liệu-->
+            <a href="#duLieuSubMenu" data-toggle="collapse" aria-expanded="false"
+               class="list-group-item list-group-item-action border-bottom d-flex justify-content-between align-items-center"
+               th:classappend="${activeParent == 'duLieu'} ? 'active' : ''"
+            >
+                Quản lý dữ liệu
+                <span>▼</span>
+            </a>
+
+            <div class="collapse" id="duLieuSubMenu"
+                 th:classappend="${activeParent == 'duLieu'} ? 'show' : ''"
+            >
+                <div class="bg-light border-bottom">
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'duLieu-saoLuu'} ? 'bg-primary text-white' : ''"
+                    >
+                        Sao lưu dữ liệu
+                    </a>
+                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'duLieu-phucHoi'} ? 'bg-primary text-white' : ''"
+                    >
+                        Phục hồi dữ liệu
+                    </a>
+                </div>
+            </div>
+
+            <!--        Thống kê báo cáo-->
+            <a href="" class="btn list-group-item list-group-item-action"
+               th:classappend="${activeParent == 'thongKeBaoCao'} ? 'active' : ''"
+            >Thống kê, báo cáo</a>
+        </div>
+    </div>
+</div>

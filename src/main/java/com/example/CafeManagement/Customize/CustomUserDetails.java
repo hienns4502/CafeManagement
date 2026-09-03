@@ -1,12 +1,17 @@
 package com.example.CafeManagement.Customize;
 
 import com.example.CafeManagement.Entity.Employee;
+import com.example.CafeManagement.Entity.Position;
+import com.example.CafeManagement.Entity.Role;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class CustomUserDetails implements UserDetails {
     private Employee employee;
@@ -18,9 +23,19 @@ public class CustomUserDetails implements UserDetails {
         this.employee = employee;
     }
 
+    public String getHoTen() {
+        return employee.getHoTen();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Position position = employee.getPosition();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        Set<Role>  roles = position.getRoles();
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return authorities;
     }
 
     @Override

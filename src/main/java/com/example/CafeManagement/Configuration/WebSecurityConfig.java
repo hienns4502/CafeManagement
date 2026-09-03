@@ -38,8 +38,8 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(auth ->
 
-                        auth.requestMatchers("/delete/**").hasAuthority("ADMIN")
-                        .anyRequest().authenticated()
+                        auth.requestMatchers("/employees/delete/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .formLogin(login ->
                         login.usernameParameter("username")
@@ -49,6 +49,10 @@ public class WebSecurityConfig {
                 .logout(logout ->
                         logout.logoutSuccessUrl("/login").permitAll()
                 )
+                .exceptionHandling(exception ->
+                        exception.accessDeniedPage("/403")
+                )
+
         ;
 
         return http.build();
