@@ -22,6 +22,7 @@ public class Position {
     String chucVu;
     double luong;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "position_role",

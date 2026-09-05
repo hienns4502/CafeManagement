@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.ui.Model;
@@ -39,7 +40,7 @@ public class ManagerController {
         model.addAttribute("positions", positions);
         model.addAttribute("activeParent", "nhanVien");
         model.addAttribute("activeChild", "nhanVien-add");
-        return "addEmployee";
+        return "employee/addEmployee";
     }
 
     @PostMapping("/employees/process_add")
@@ -60,7 +61,7 @@ public class ManagerController {
         model.addAttribute("listEmployees", employees);
         model.addAttribute("activeParent", "nhanVien");
         model.addAttribute("activeChild", "nhanVien-list");
-        return "employees";
+        return "employee/employees";
     }
 
     @GetMapping("/employees/delete/{id}")
@@ -71,30 +72,38 @@ public class ManagerController {
     }
 
     @GetMapping("/employees/edit/{id}")
-    public String showEditForm(@PathVariable(value = "id") String id, Model model) {
+    public String showEditForm(@PathVariable(value = "id") String id, Model model, Authentication authentication) {
         Employee employee = employeeService.getEmployee(id);
         List<Position> positions = positionService.getAllPositions();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("employee", employee);
         model.addAttribute("positions", positions);
-        model.addAttribute("title","Chỉnh sửa nhân viên");
-        return "editEmployee";
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("title", "Chỉnh sửa nhân viên");
+        return "employee/editEmployee";
     }
 
     @PostMapping("/employees/edit/process_edit")
     public String prosessEdit(
             @ModelAttribute Employee employee,
-            @RequestParam(value = "positionId", required = false) String positionId,
+            @RequestParam(value = "positionId") String positionId,
             @RequestParam(value = "avatarFile", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws IOException {
         employeeService.updateEmployee(employee, positionId, file);
         redirectAttributes.addFlashAttribute("successMessage", "Updated successfully");
-        if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            return "redirect:/manager/employees";
-        }else {
-            return "redirect:/profile";
-        }
+        return "redirect:/manager/employees";
+    }
+
+    @PostMapping("/employees/search")
+    public String searchEmployee(@RequestParam(value = "keyword") String keyword, Model model) {
+        List<Employee> employees = employeeService.searchEmployees(keyword);
+        model.addAttribute("listEmployees", employees);
+        model.addAttribute("key", keyword);
+        model.addAttribute("activeParent", "nhanVien");
+        model.addAttribute("activeChild", "nhanVien-list");
+        return "employee/employees";
     }
 
 }

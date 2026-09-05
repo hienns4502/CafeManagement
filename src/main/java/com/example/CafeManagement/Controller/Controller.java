@@ -41,7 +41,7 @@ public class Controller {
         model.addAttribute("employee", employee);
         model.addAttribute("activeParent", "trangCaNhan");
         model.addAttribute("title", "Trang cá nhân");
-        return "profile";
+        return "employee/profile";
     }
 
     @GetMapping("/profile-edit")
@@ -49,17 +49,16 @@ public class Controller {
         Employee employee = employeeService.getMyInfo();
         model.addAttribute("employee", employee);
         model.addAttribute("title","Chỉnh sửa thông tin cá nhân");
-        return "editEmployee";
+        return "employee/editEmployee";
     }
 
     @PostMapping("/profile-edit/process")
     public String prosessEditProfile(
             @ModelAttribute Employee employee,
-            @RequestParam(value = "positionId", required = false) String positionId,
             @RequestParam(value = "avatarFile", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes
     ) throws IOException {
-        employeeService.updateEmployee(employee, positionId, file);
+        employeeService.updateProfile(employee, file);
         redirectAttributes.addFlashAttribute("successMessage", "Updated successfully");
         return "redirect:/profile";
     }

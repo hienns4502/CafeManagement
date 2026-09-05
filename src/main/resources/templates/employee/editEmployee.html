@@ -13,7 +13,7 @@
     <div class="text-center">
         <div class="row mt-5 ml-3">
 
-            <form th:action="@{/manager/employees/edit/process_edit}" method="post"
+            <form th:action="${isAdmin} ? @{/manager/employees/edit/process_edit} : @{/profile-edit/process}" method="post"
                   th:object="${employee}"
                   style="margin: 0 auto; width: 100%"
                   enctype="multipart/form-data"

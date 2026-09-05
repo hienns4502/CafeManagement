@@ -38,8 +38,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(auth ->
 
-                        auth.requestMatchers("/manager/employees/edit/process_edit").authenticated()
-                        .requestMatchers("/manager/**").hasRole("ADMIN")
+                        auth.requestMatchers("/manager/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(login ->

@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Employee findByUsername(String username);
+
     @Query("SELECT e FROM Employee e JOIN FETCH e.position")
     List<Employee> findAllWithChucVu();
+
+    List<Employee> findByHoTenContainingIgnoreCase(String hoTen);
 }

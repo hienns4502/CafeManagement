@@ -77,7 +77,8 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Not Found"));
         employeeRepository.delete(employee);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #employee.getId() == principal.id")
+
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #employee.getId() == principal.id")
     public void updateEmployee(@Param("employee") Employee employee, String positionId, MultipartFile file) throws IOException {
         String employeeId = employee.getId();
         Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Not Found"));
@@ -115,5 +116,37 @@ public class EmployeeService {
         return employee;
     }
 
+    public void updateProfile(Employee employee, MultipartFile file) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String employeeId = customUserDetails.getId();
+        Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Not Found"));
+        employeeMapper.updateEmployee(employee, foundEmployee);
+        String fileName = saveFile(file);
+        if(fileName != null){
+            foundEmployee.setPathAvatar(fileName);
+        }
+        employeeRepository.save(foundEmployee);
+    }
+
+    public List<Employee> searchEmployees(String key) {
+        List<Employee> foundEmployees = employeeRepository.findByHoTenContainingIgnoreCase(key);
+        return foundEmployees;
+    }
+
+
+
+    private String saveFile(MultipartFile file) throws IOException {
+        String fileName = null;
+        if (file != null && !file.isEmpty()) {
+            Path path = Paths.get("F:\\OnTapSQL\\BaiLam\\QuanLyQuanCafe\\uploads");
+            String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+            fileName = Objects.isNull(fileExtension) ? UUID.randomUUID().toString()
+                    : UUID.randomUUID().toString() + "." + fileExtension;
+            Path filePath = path.resolve(fileName).normalize().toAbsolutePath();
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return fileName;
+    }
 
 }
