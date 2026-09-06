@@ -13,7 +13,7 @@
 
             <nav class="navbar bg-primary-custom pb-4 px-0">
                 <div class="w-100">
-                    <form th:action="@{/manager/employees/search}" class="d-flex w-100" role="search" method="post">
+                    <form th:action="@{/manager/equipment/search}" class="d-flex w-100" role="search" method="post">
                         <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search"/>
                         <button class="btn btn-primary ml-3" type="submit">Search</button>
                     </form>
@@ -37,12 +37,12 @@
                         <td th:text="${#numbers.formatDecimal(equipment.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
                         <td th:text="${#numbers.formatDecimal(equipment.tongTien, 0, 'COMMA', 0, 'POINT')}"></td>
                         <td style="width: 1%; white-space: nowrap;">
-                            <a th:href="@{|/manager/employees/delete/${equipment.id}|}"
+                            <a th:href="@{|/manager/equipment/delete/${equipment.id}|}"
                                onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này không?');"
                                class="btn btn-danger btn-sm mr-1">
                                 <i class="fa-solid fa-trash"></i> Xóa
                             </a>
-                            <a th:href="@{|/manager/employees/edit/${equipment.id}|}"
+                            <a th:href="@{|/manager/equipment/edit/${equipment.id}|}"
                                class="btn btn-success btn-sm">
                                 <i class="fa-solid fa-pencil"></i> Cập nhật
                             </a>
