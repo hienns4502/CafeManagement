@@ -18,11 +18,11 @@
         </div>
         <div class="row">
             <div class="col-3">
-                <div class="border p-2 h-100"> <!-- Đưa border và padding vào đây -->
-                    <div th:insert="fragments/sidebar :: sidebar"></div>
+                <div class="border p-2 h-100" style="max-height: 90vh; height: 90vh; overflow-y: scroll;"> <!-- Đưa border và padding vào đây -->
+                    <div th:insert="~{fragments/sidebar :: sidebar}"></div>
                 </div>
             </div>
-            <div class="col-9 text-center " style="height: 90vh">
+            <div class="col-9 text-center " style="max-height: 90vh; height: 90vh">
                 <div class="border p-3 h-100 bg-primary-custom" layout:fragment="content">
 
                 </div>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm thiết bị</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="mt-5">
+        <form  th:action="@{process-add}" method="post" th:object="${equipment}"
+               style="margin: 0 auto; width: 100%">
+            <div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Tên thiết bị</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" th:field="*{tenThietBi}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Số lượng</label>
+                    <div class="col-9">
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = 0;" class="form-control" th:field="*{soLuong}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Ngày mua</label>
+                    <div class="col-9">
+                        <input type="date" min="0" oninput="if(this.value < 0) this.value = 0;" class="form-control" th:field="*{ngayMua}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Đơn giá</label>
+                    <div class="col-9">
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = 0;" class="form-control" th:field="*{donGia}" required>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <button type="submit" class="btn btn-primary">Thêm</button>
+                <a href="/manager/equipment/list" class="btn btn-danger ml-5">Hủy</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

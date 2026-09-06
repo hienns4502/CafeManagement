@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách thiết bị</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+            <nav class="navbar bg-primary-custom pb-4 px-0">
+                <div class="w-100">
+                    <form th:action="@{/manager/employees/search}" class="d-flex w-100" role="search" method="post">
+                        <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-primary ml-3" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            <div class="overflow-auto" style="max-height: 495px;">
+                <table class="table table-striped table-bordered ">
+                    <thead class="thead-light sticky-top">
+                    <th>Tên thiết bị</th>
+                    <th>Ngày mua</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Tổng tiền</th>
+                    <th style="width: 1%; white-space: nowrap;">Hành động</th>
+                    </thead>
+                    <tbody>
+                    <tr th:each="equipment : ${equipmentResponseList}">
+                        <td th:text="${equipment.tenThietBi}"></td>
+                        <td th:text="${equipment.ngayMua}"></td>
+                        <td th:text="${equipment.soLuong}"></td>
+                        <td th:text="${#numbers.formatDecimal(equipment.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
+                        <td th:text="${#numbers.formatDecimal(equipment.tongTien, 0, 'COMMA', 0, 'POINT')}"></td>
+                        <td style="width: 1%; white-space: nowrap;">
+                            <a th:href="@{|/manager/employees/delete/${equipment.id}|}"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này không?');"
+                               class="btn btn-danger btn-sm mr-1">
+                                <i class="fa-solid fa-trash"></i> Xóa
+                            </a>
+                            <a th:href="@{|/manager/employees/edit/${equipment.id}|}"
+                               class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-pencil"></i> Cập nhật
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+</div>
+</body>
+</html>

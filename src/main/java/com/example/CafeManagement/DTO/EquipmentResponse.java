@@ -1,27 +1,21 @@
-package com.example.CafeManagement.Entity;
+package com.example.CafeManagement.DTO;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Set;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Equipment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class EquipmentResponse {
     String id;
-    @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String tenThietBi;
-    @Column(nullable = false)
     int soLuong = 0;
     LocalDate ngayMua;
     Long donGia;
+    Long tongTien;
 }
