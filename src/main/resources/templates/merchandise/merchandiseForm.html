@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm hàng hóa</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="mt-5">
+        <form th:action="@{${action == 'add' ? '/manager/merchandise/process-add' : '/manager/merchandise/process-update'}}"
+              method="post"
+              th:object="${merchandise}"
+              style="margin: 0 auto; width: 100%">
+            <input type="hidden" th:field="*{id}" th:if="${action != 'add'}">
+            <div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Tên hàng hóa</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" th:field="*{tenHangHoa}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Số lượng</label>
+                    <div class="col-9">
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = 0;" class="form-control"
+                               th:field="*{soLuong}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Đơn giá</label>
+                    <div class="col-9">
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = 0;" class="form-control"
+                               th:field="*{donGia}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Đơn vị tính</label>
+                    <div class="col-9 text-left">
+                        <!--                        <select class="form-select" name="unitId" size="5">-->
+                        <!--                                <option value="" disabled selected>Đơn vị tính</option>-->
+                        <!--                                <option th:each="u : ${units}"-->
+                        <!--                                        th:value="${u.id}"-->
+                        <!--                                        th:text="${u.tenDonViTinh}"-->
+                        <!--                                        th:selected="${action == 'edit' && merchandise.donViTinh != null && u.id == merchandise.donViTinh.id}"-->
+                        <!--                                ></option>-->
+                        <!--                        </select>-->
+
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle text-left d-flex justify-content-between align-items-center"
+                                    type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    style="width: auto; min-width: 150px;"
+                            >
+                            <span id="selectedUnitText">
+                                <th:block th:text="${action == 'edit' && merchandise.donViTinh != null ? merchandise.donViTinh.tenDonViTinh : 'Đơn vị tính'}">Đơn vị tính</th:block>
+                            </span>
+                            </button>
+
+                            <!-- Input ẩn để lưu ID gửi về Controller -->
+                            <input type="hidden" name="unitId" id="unitIdInput"
+                                   th:value="${action == 'edit' && merchandise.donViTinh != null ? merchandise.donViTinh.id : ''}">
+
+                            <!-- Danh sách có thanh cuộn -->
+                            <div class="dropdown-menu" style="max-height: 180px; overflow-y: auto; width: auto; min-width: 150px;"
+                                >
+                                <a class="dropdown-item" href="#"
+                                   th:each="u : ${units}"
+                                   th:data-id="${u.id}"
+                                   th:text="${u.tenDonViTinh}"
+                                   onclick="selectUnit(event, this)"></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <button type="submit" class="btn btn-primary"
+                        th:text="${action == 'add' ? 'Thêm' : 'Cập nhật'}"></button>
+                <a href="/manager/merchandise/list" class="btn btn-danger ml-5">Hủy</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

@@ -82,18 +82,23 @@
                  th:classappend="${activeParent == 'khoHang'} ? 'show' : ''"
             >
                 <div class="bg-light border-bottom">
-                    <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
-                       th:classappend="${activeChild == 'hangHoa-list'} ? 'bg-primary text-white' : ''"
+                    <a th:href="@{/manager/merchandise/list}" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'hangHoa-list'} ? 'bg-custom-active text-white' : ''"
                     >
                         Xem danh sách hàng
                     </a>
+                    <a th:href="@{/manager/merchandise/add}" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
+                       th:classappend="${activeChild == 'hangHoa-add'} ? 'bg-custom-active text-white' : ''"
+                    >
+                        Thêm hàng hóa
+                    </a>
                     <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
-                       th:classappend="${activeChild == 'hangHoa-import'} ? 'bg-primary text-white' : ''"
+                       th:classappend="${activeChild == 'hangHoa-import'} ? 'bg-custom-active text-white' : ''"
                     >
                         Nhập hàng hóa
                     </a>
                     <a href="" class="list-group-item list-group-item-action bg-transparent pl-4 border-0 py-2"
-                       th:classappend="${activeChild == 'hangHoa-export'} ? 'bg-primary text-white' : ''"
+                       th:classappend="${activeChild == 'hangHoa-export'} ? 'bg-custom-active text-white' : ''"
                     >
                         Xuất hàng hóa
                     </a>

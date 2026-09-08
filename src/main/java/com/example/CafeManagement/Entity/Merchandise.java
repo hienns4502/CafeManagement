@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -15,10 +16,12 @@ public class Merchandise {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String tenHangHoa;
-    String soLuong;
+    int soLuong;
     Long donGia;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "unit_id")
     Unit donViTinh;
 
 }

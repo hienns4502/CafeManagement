@@ -24,3 +24,8 @@ $(document).ready(function() {
         $(this).toggleClass('active');
     });
 });
+ function selectUnit(event, element) {
+        event.preventDefault();
+        document.getElementById('unitIdInput').value = element.getAttribute('data-id');
+        document.getElementById('selectedUnitText').innerText = element.innerText;
+    }

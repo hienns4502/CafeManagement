@@ -1,9 +1,6 @@
 package com.example.CafeManagement.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,8 +13,10 @@ import lombok.experimental.FieldDefaults;
 @Entity
 public class Tables {
     @Id
-            @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(20")
     String tenBan;
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(20")
     String trangThai;
 }

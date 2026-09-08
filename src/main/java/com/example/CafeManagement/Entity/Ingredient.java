@@ -19,6 +19,7 @@ public class Ingredient {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "items_id", nullable = false, updatable = false)
     Items mon;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "unit_id")
     Unit donViTinh;
 }

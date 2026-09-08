@@ -14,7 +14,7 @@
             <nav class="navbar bg-primary-custom pb-4 px-0">
                 <div class="w-100">
                     <form th:action="@{/manager/equipment/search}" class="d-flex w-100" role="search" method="post">
-                        <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search"/>
+                        <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search" required />
                         <button class="btn btn-primary ml-3" type="submit">Search</button>
                     </form>
                 </div>

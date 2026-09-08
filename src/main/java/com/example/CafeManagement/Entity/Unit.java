@@ -15,7 +15,8 @@ import java.util.List;
 @Entity
 public class Unit {
     @Id
-            @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    @Column(unique = true, nullable = false, columnDefinition = "NVARCHAR(30)")
     String tenDonViTinh;
 }
