@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khuyến mãi</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <nav class="navbar bg-primary-custom pb-4 px-0">
+        <div class="w-100">
+            <form th:action="@{/manager/voucher/search}" class="d-flex w-100" role="search" method="post">
+                <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search" required />
+                <button class="btn btn-primary ml-3" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    <div class="overflow-auto" style="max-height: 495px;">
+        <table class="table table-striped table-bordered ">
+            <thead class="thead-light sticky-top">
+            <th>Tên khuyến mãi</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+            <th>Phần trăm giảm giá</th>
+            <th style="width: 1%; white-space: nowrap;">Hành động</th>
+            </thead>
+            <tbody>
+            <tr th:each="voucher : ${voucherList}">
+                <td th:text="${voucher.tenKhuyenMai}"></td>
+                <td th:text="${voucher.ngayBatDau}"></td>
+                <td th:text="${voucher.ngayKetThuc}"></td>
+                <td th:text="${voucher.phanTramGiamGia}"></td>
+
+                <td style="width: 1%; white-space: nowrap;">
+                    <a th:href="@{|/manager/voucher/delete/${voucher.id}|}"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa hàng hóa này không?');"
+                       class="btn btn-danger btn-sm mr-1">
+                        <i class="fa-solid fa-trash"></i> Xóa
+                    </a>
+                    <a th:href="@{|/manager/voucher/edit/${voucher.id}|}"
+                       class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-pencil"></i> Cập nhật
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

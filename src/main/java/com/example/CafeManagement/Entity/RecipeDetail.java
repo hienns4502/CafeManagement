@@ -11,14 +11,17 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Ingredient {
+public class RecipeDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "merchandise_id", nullable = false)
+    Merchandise hangHoa;
     int soLuong;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "items_id", nullable = false, updatable = false)
-    Items mon;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dish_id", nullable = false)
+    Dish mon;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "unit_id")
     Unit donViTinh;

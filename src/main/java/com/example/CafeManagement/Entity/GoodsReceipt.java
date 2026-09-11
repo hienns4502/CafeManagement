@@ -26,4 +26,7 @@ public class GoodsReceipt {
     Employee employee;
     @OneToMany(mappedBy = "goodsReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GoodsReceiptEquipmentDetail> goodsReceiptEquipmentDetails;
+    @ManyToOne
+    @JoinColumn(name = "suplier_id")
+    Suplier nhaCungCap;
 }

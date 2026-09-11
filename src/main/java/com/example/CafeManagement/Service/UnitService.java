@@ -18,4 +18,9 @@ public class UnitService {
     public List<Unit> getUnitList(){
         return unitRepository.findAll();
     }
+
+    public Unit getUnitById(String id){
+        Unit foundUnit = unitRepository.findById(id).orElseThrow(() -> new RuntimeException("Unit not found"));
+        return foundUnit;
+    }
 }

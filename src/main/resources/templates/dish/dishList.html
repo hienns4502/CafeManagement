@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách thực đơn</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <nav class="navbar bg-primary-custom pb-4 px-0">
+        <div class="w-100">
+            <form th:action="@{/manager/dish/search}" class="d-flex w-100" role="search" method="post">
+                <input th:name="keyword" th:value="${key}" class="form-control" type="search" placeholder="Search" aria-label="Search" required />
+                <button class="btn btn-primary ml-3" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    <div class="overflow-auto" style="max-height: 495px;">
+        <table class="table table-striped table-bordered ">
+            <thead class="thead-light sticky-top">
+            <th>STT</th>
+            <th>Tên món</th>
+            <th>Giá tiền</th>
+            <th style="width: 1%; white-space: nowrap;">Hành động</th>
+            </thead>
+            <tbody>
+            <tr th:each="dish, iterStat : ${dishList}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${dish.tenMon}"></td>
+                <td th:text="${dish.giaTien}"></td>
+
+                <td style="width: 1%; white-space: nowrap;">
+                    <a th:href="@{|/manager/dish/delete/${dish.id}|}"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa món này không?');"
+                       class="btn btn-danger btn-sm mr-1">
+                        <i class="fa-solid fa-trash"></i> Xóa
+                    </a>
+                    <a th:href="@{|/manager/dish/edit/${dish.id}|}"
+                       class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-pencil"></i> Cập nhật
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

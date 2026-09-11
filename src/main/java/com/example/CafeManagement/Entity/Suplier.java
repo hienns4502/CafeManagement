@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Supplier {
+public class Suplier {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

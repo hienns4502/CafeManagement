@@ -28,7 +28,7 @@ public class MerchandiseRepositoryTest {
 
 
         Unit unit1 = Unit.builder()
-                .tenDonViTinh("Túi")
+                .tenDonViTinh("Cup")
                 .build();
         Unit savedUnit1 = unitRepository.save(unit1);
 
