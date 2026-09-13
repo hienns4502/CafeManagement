@@ -54,8 +54,10 @@
 
         // Reset lại form nhập liệu bên dưới
         selectElem.selectedIndex = 0;
+        $(selectElem).val('0').trigger('change');
         quantityElem.value = '';
         unitElem.selectedIndex = 0;
+        $(unitElem).val('0').trigger('change')
 
         updateIndexes();
     }

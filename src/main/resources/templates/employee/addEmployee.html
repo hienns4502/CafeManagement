@@ -67,7 +67,7 @@
                                         <div class="form-group row">
                                             <label class="form-col-label col-3 text-left">Chức vụ</label>
                                             <div class="col-9 text-left">
-                                                <select class="form-select" name="positionId">
+                                                <select class="form-select" name="positionId" required>
                                                     <option value="" disabled selected>Chức vụ</option>
                                                     <option th:each="p : ${positions}" th:value="${p.id}"
                                                             th:text="${p.chucVu}"></option>

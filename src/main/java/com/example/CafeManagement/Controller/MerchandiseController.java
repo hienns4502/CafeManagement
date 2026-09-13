@@ -99,4 +99,5 @@ public class MerchandiseController {
         model.addAttribute("key", key);
         return "/merchandise/merchandiseList";
     }
+
 }

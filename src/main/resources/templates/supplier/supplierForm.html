@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm nhà cung cấp</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="mt-5">
+        <form th:action="@{${action == 'add' ? '/manager/supplier/process-add' : '/manager/supplier/process-update'}}"
+              method="post"
+              th:object="${supplier}"
+              style="margin: 0 auto; width: 100%">
+            <input type="hidden" th:field="*{id}" th:if="${action != 'add'}">
+            <div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Tên nhà cung cấp</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" th:field="*{tenNhaCungCap}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Địa chỉ</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control"
+                               th:field="*{diaChi}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="form-col-label col-3 text-left">Số điện thoại</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control"
+                               th:field="*{soDienThoai}" required>
+                    </div>
+                </div>
+
+            </div>
+            <div class="mt-5">
+                <button type="submit" class="btn btn-primary"
+                        th:text="${action == 'add' ? 'Thêm' : 'Cập nhật'}"></button>
+                <a href="/manager/voucher/list" class="btn btn-danger ml-5">Hủy</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

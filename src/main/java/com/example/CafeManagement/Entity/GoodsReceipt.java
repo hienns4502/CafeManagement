@@ -16,17 +16,15 @@ import java.util.Set;
 @Entity
 public class GoodsReceipt {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     LocalDateTime ngayNhap;
-    long tongTien;
-    @Column(nullable = false
-    )
-    String matHang;
+    Long tongTien;
     @ManyToOne(fetch = FetchType.LAZY)
-    Employee employee;
-    @OneToMany(mappedBy = "goodsReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<GoodsReceiptEquipmentDetail> goodsReceiptEquipmentDetails;
+    Employee nguoiNhap;
+    @OneToMany(mappedBy = "phieuNhap", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<GoodsReceiptMerchandiseDetail> goodsReceiptMerchandiseDetails;
     @ManyToOne
     @JoinColumn(name = "suplier_id")
-    Suplier nhaCungCap;
+    Supplier nhaCungCap;
 }

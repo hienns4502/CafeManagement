@@ -34,8 +34,8 @@ public class DishController {
     public String showDishList(Model model) {
         List<Dish> dishList = dishService.getDishList();
         model.addAttribute("dishList", dishList);
-        model.addAttribute("activeParent", "thucdon");
-        model.addAttribute("activeChild", "thucdon-list");
+        model.addAttribute("activeParent", "thucDon");
+        model.addAttribute("activeChild", "thucDon-list");
         model.addAttribute("title", "Danh sách thực đơn");
         return "/dish/dishList";
     }
@@ -52,7 +52,7 @@ public class DishController {
         model.addAttribute("activeChild", "thucDon-add");
         model.addAttribute("title", "Thêm thực đơn");
         model.addAttribute("action", "add");
-        return "/dish/testdishForm";
+        return "/dish/dishForm";
     }
 
     @PostMapping("process-add")
@@ -85,7 +85,7 @@ public class DishController {
         model.addAttribute("merchandises", merchandises);
         model.addAttribute("title", "Cập nhật thực đơn");
         model.addAttribute("action", "edit");
-        return "/dish/testdishForm";
+        return "/dish/dishForm";
     }
 
     @PostMapping("/process-update")
@@ -94,19 +94,19 @@ public class DishController {
             RedirectAttributes redirectAttributes
     ){
         dishService.updateDish(dishFormDTO);
-        redirectAttributes.addFlashAttribute("successMessage", "Merchandise updated successfully");
-        return "redirect:/manager/voucher/list";
+        redirectAttributes.addFlashAttribute("successMessage", "Dish updated successfully");
+        return "redirect:/manager/dish/list";
     }
 
-//    @PostMapping("/search")
-//    public String searchMerchandise(@RequestParam("keyword") String key, Model model) {
-//        List<Voucher> voucherList = voucherService.getVoucherListByKey(key);
-//        model.addAttribute("voucherList", voucherList);
-//        model.addAttribute("activeParent", "marketing");
-//        model.addAttribute("activeChild", "marketing-list");
-//        model.addAttribute("title", "Danh sách khuyến mãi");
-//        model.addAttribute("key", key);
-//        return "/voucher/voucherList";
-//    }
+    @PostMapping("/search")
+    public String searchMerchandise(@RequestParam("keyword") String key, Model model) {
+        List<Dish> dishList = dishService.getDishListByKey(key);
+        model.addAttribute("dishList", dishList);
+        model.addAttribute("activeParent", "thucDon");
+        model.addAttribute("activeChild", "thucDon-list");
+        model.addAttribute("title", "Danh sách thực đơn");
+        model.addAttribute("key", key);
+        return "/dish/dishList";
+    }
 
 }

@@ -99,16 +99,16 @@ public class DishService {
 
     @Transactional
     public void updateDish(DishFormDTO dto) {
-            Dish dish = dishRepository.findById(dto.getId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy món ăn!"));
+        Dish dish = dishRepository.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy món ăn!"));
 
-            dish.setTenMon(dto.getTenMon());
-            dish.setGiaTien(dto.getGiaTien());
+        dish.setTenMon(dto.getTenMon());
+        dish.setGiaTien(dto.getGiaTien());
 
-            List<RecipeDetailDTO> detailDTOs = dto.getRecipeDetails();
-            if (detailDTOs == null || detailDTOs.isEmpty()) {
-                throw new IllegalArgumentException("Nguyên liệu không được để trống!");
-            }
+        List<RecipeDetailDTO> detailDTOs = dto.getRecipeDetails();
+        if (detailDTOs == null || detailDTOs.isEmpty()) {
+            throw new IllegalArgumentException("Nguyên liệu không được để trống!");
+        }
 
 
         List<String> merchandiseIds = detailDTOs.stream()
@@ -121,7 +121,6 @@ public class DishService {
                 .distinct()
                 .toList();
 
-
         Map<String, Merchandise> merchandiseMap = merchandiseRepository.findAllById(merchandiseIds).stream()
                 .collect(Collectors.toMap(Merchandise::getId, Function.identity()));
 
@@ -129,33 +128,33 @@ public class DishService {
                 .collect(Collectors.toMap(Unit::getId, Function.identity()));
 
 
-            dish.getRecipeDetails().clear();
+        dish.getRecipeDetails().clear();
 
 
-            List<RecipeDetail> newDetails = detailDTOs.stream().map(itemDto -> {
-                Merchandise merchandise = merchandiseMap.get(itemDto.getMerchandiseId());
-                Unit unit = unitMap.get(itemDto.getUnitId());
+        List<RecipeDetail> newDetails = detailDTOs.stream().map(itemDto -> {
+            Merchandise merchandise = merchandiseMap.get(itemDto.getMerchandiseId());
+            Unit unit = unitMap.get(itemDto.getUnitId());
 
-                if (merchandise == null || unit == null) {
-                    throw new IllegalArgumentException("Hàng hóa hoặc đơn vị tính không tồn tại!");
-                }
+            if (merchandise == null || unit == null) {
+                throw new IllegalArgumentException("Hàng hóa hoặc đơn vị tính không tồn tại!");
+            }
 
-                return RecipeDetail.builder()
-                        .hangHoa(merchandise)
-                        .soLuong(itemDto.getQuantity())
-                        .donViTinh(unit)
-                        .mon(dish)
-                        .build();
-            }).toList();
+            return RecipeDetail.builder()
+                    .hangHoa(merchandise)
+                    .soLuong(itemDto.getQuantity())
+                    .donViTinh(unit)
+                    .mon(dish)
+                    .build();
+        }).toList();
 
-            // 5. Thêm vào danh sách và lưu
-            dish.getRecipeDetails().addAll(newDetails);
-            dishRepository.save(dish);
+
+        dish.getRecipeDetails().addAll(newDetails);
+        dishRepository.save(dish);
     }
 
-//    public List<Voucher> getVoucherListByKey(String key) {
-//        List<Voucher> voucherList = voucherRepository.findByTenKhuyenMaiContainingIgnoreCase(key);
-//        return voucherList;
-//    }
+    public List<Dish> getDishListByKey(String key) {
+        List<Dish> dishList = dishRepository.findByTenMonContainingIgnoreCase(key);
+        return dishList;
+    }
 
 }

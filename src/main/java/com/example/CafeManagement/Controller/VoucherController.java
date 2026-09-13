@@ -61,7 +61,7 @@ public class VoucherController {
             RedirectAttributes redirectAttributes
     ){
         voucherService.deleteVoucher(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Merchandise deleted successfully");
+        redirectAttributes.addFlashAttribute("successMessage", "Voucher deleted successfully");
         return "redirect:/manager/voucher/list";
     }
 
@@ -80,7 +80,7 @@ public class VoucherController {
             RedirectAttributes redirectAttributes
     ){
         voucherService.updateVouCher(voucher);
-        redirectAttributes.addFlashAttribute("successMessage", "Merchandise updated successfully");
+        redirectAttributes.addFlashAttribute("successMessage", "Voucher updated successfully");
         return "redirect:/manager/voucher/list";
     }
 

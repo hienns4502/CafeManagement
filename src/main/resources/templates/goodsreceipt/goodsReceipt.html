@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Phiếu nhập hàng hóa</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <form th:action="@{/manager/goods-receipt/process-create}" method="post" th:object="${goodsReceiptDTO}">
+        <div class="receipt-infor mb-3">
+            <h4>Phiếu nhập hàng hóa</h4>
+            <div class="border">
+                <div class="p-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label class="form-col-label col-4 text-left">Người nhập:</label>
+                                <div class="col-8 text-left">
+                                    <span sec:authentication="principal.hoTen">Nguyễn Lan Anh</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label class="form-col-label col-4 text-left">Ngày nhập:</label>
+                                <div class="col-8 text-left">
+                                    <input type="datetime-local" th:field="*{ngayNhap}" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label class="form-col-label col-4 text-left">Hàng hóa nhập:</label>
+                                <div class="col-7 text-left">
+                                    <select id="tempHangHoa" class="form-control select"
+                                            data-placeholder="-- Chọn hàng hóa --"
+                                    >
+                                        <option value="">Chọn hàng hóa</option>
+                                        <option th:each="h : ${hangHoa}" th:value="${h.id}" th:text="${h.tenHangHoa}"
+                                        th:data-unit="${h.donViTinh.tenDonViTinh}"
+                                        ></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label class="form-col-label col-4 text-left">Nhà cung cấp</label>
+                                <div class="col-8 text-left">
+                                    <select th:field="*{nhaCungCap.id}" class="form-control form-control select"
+                                            data-placeholder="-- Chọn nhà cung cấp --" required>
+                                        <option value=""></option>
+                                        <option th:each="n : ${nhaCungCap}" th:value="${n.id}" th:text="${n.tenNhaCungCap}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group row">
+                                <label class="form-col-label col-5 text-left">Số lượng:</label>
+                                <div class="col-7 text-left">
+                                    <input id="tempSoLuong" type="number" class="form-control" min="1" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group row">
+                                <label class="form-col-label col-3 text-left">ĐVT:</label>
+                                <div class="col-7 text-left ml-2">
+                                    <span id="tempDvt"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group row">
+                                <label class="form-col-label col-5 text-left">Đơn giá:</label>
+                                <div class="col-7 text-left">
+                                    <input type="number" id="tempDonGia" min="0" class="form-control" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button id="btnAddRow" class="btn btn-sm btn-primary">Thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-auto" style="max-height: 218px;">
+            <table class="table table-striped table-bordered " id="detailTable">
+                <thead class="thead-light sticky-top">
+                <th>STT</th>
+                <th>Tên hàng hóa</th>
+                <th>Số lượng</th>
+                <th>Đơn vị tính</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+                <th style="width: 1%; white-space: nowrap;">Hành động</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="p-2">
+            <h5>
+                Tổng tiền: <strong id="tongTienDisplay"></strong>
+            </h5>
+        </div>
+        <button type="submit" class="btn btn-success">Lưu phiếu nhập</button>
+    </form>
+
+</div>
+</body>
+</html>
