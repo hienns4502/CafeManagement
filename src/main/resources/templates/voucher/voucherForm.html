@@ -27,6 +27,7 @@
                     <div class="col-9">
                         <input type="date" class="form-control"
                                th:field="*{ngayBatDau}" required>
+                        <small class="text-danger text-sm" th:errors="*{ngayBatDau}"></small>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -34,6 +35,8 @@
                     <div class="col-9">
                         <input type="date" class="form-control"
                                th:field="*{ngayKetThuc}" required>
+                        <small class="text-danger text-sm" th:errors="*{ngayKetThuc}"></small>
+
                     </div>
                 </div>
                 <div class="form-group row">

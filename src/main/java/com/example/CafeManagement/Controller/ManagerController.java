@@ -1,10 +1,14 @@
 package com.example.CafeManagement.Controller;
 
 import com.example.CafeManagement.Customize.CustomUserDetails;
+import com.example.CafeManagement.DTO.EmployeeCreateRequest;
+import com.example.CafeManagement.DTO.EmployeeUpdateRequest;
+import com.example.CafeManagement.DTO.EmployeeUpdateRequestUser;
 import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.Position;
 import com.example.CafeManagement.Service.EmployeeService;
 import com.example.CafeManagement.Service.PositionService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,7 +41,7 @@ public class ManagerController {
     @GetMapping("/employees/add")
     public String showSignUpForm(Model model) {
         List<Position> positions = positionService.getAllPositions();
-        model.addAttribute("user", new Employee());
+        model.addAttribute("user", new EmployeeCreateRequest());
         model.addAttribute("positions", positions);
         model.addAttribute("activeParent", "nhanVien");
         model.addAttribute("activeChild", "nhanVien-add");
@@ -45,12 +50,19 @@ public class ManagerController {
 
     @PostMapping("/employees/process_add")
     public String processSignUpForm(
-            Employee employee,
+            @Valid @ModelAttribute("user") EmployeeCreateRequest  request,
+            BindingResult result,
             @RequestParam("positionId") String positionId,
             @RequestParam(value = "avatarFile", required = false) MultipartFile file,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) throws IOException {
-        employeeService.createEmployee(employee, positionId, file);
+        if(result.hasErrors()){
+            List<Position> positions = positionService.getAllPositions();
+            model.addAttribute("positions", positions);
+            return "employee/addEmployee";
+        }
+        employeeService.createEmployee(request, positionId, file);
         redirectAttributes.addFlashAttribute("successMessage", "Employee created successfully");
         return "redirect:/manager/employees";
     }
@@ -85,12 +97,22 @@ public class ManagerController {
 
     @PostMapping("/employees/edit/process_edit")
     public String prosessEdit(
-            @ModelAttribute Employee employee,
+            @Valid @ModelAttribute("employee") EmployeeUpdateRequestUser employee,
+            BindingResult result,
             @RequestParam(value = "positionId") String positionId,
             @RequestParam(value = "avatarFile", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes,
+            Authentication authentication,
+            Model model,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws IOException {
+        if(result.hasErrors()){
+            List<Position> positions = positionService.getAllPositions();
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            model.addAttribute("positions", positions);
+            model.addAttribute("isAdmin", isAdmin);
+            return  "employee/editEmployee";
+        }
         employeeService.updateEmployee(employee, positionId, file);
         redirectAttributes.addFlashAttribute("successMessage", "Updated successfully");
         return "redirect:/manager/employees";

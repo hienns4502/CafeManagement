@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Data
 public class DeliveryNoteDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

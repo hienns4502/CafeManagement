@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết phiếu xuất hàng</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div th:object="${deliveryNote}">
+
+        <!-- Tiêu đề -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h3 class="font-weight-bold mb-1">
+                    <i class="fas fa-file-import text-primary"></i>
+                    Phiếu xuất hàng hóa
+                </h3>
+
+                <small class="text-muted">
+                    Thông tin chi tiết phiếu xuất hàng
+                </small>
+            </div>
+
+            <div>
+                <button class="btn btn-secondary mr-2" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại
+                </button>
+            </div>
+
+        </div>
+
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white font-weight-bold">
+
+                <i class="fas fa-info-circle text-primary mr-2"></i>
+
+                Thông tin phiếu xuất
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="font-weight-bold">
+                            Mã phiếu xuất
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{id}"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="font-weight-bold">
+                            Ngày xuất
+                        </label>
+
+                        <input type="datetime-local"
+                               class="form-control"
+                               th:field="*{ngayXuat}" readonly>
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="font-weight-bold">
+                            Người xuất
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{nguoiXuat.hoTen}"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="font-weight-bold">
+                            Người nhận
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{nguoiNhan.hoTen}"
+                               readonly>
+
+                    </div>
+
+                    <!-- Trạng thái -->
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="font-weight-bold">
+                            Trạng thái
+                        </label>
+
+                        <div class="form-control bg-secondary-light">
+
+                        <span class="badge badge-success">
+                            <i class="fas fa-check-circle"></i>
+                            Đã xuất
+                        </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white
+                    d-flex justify-content-between
+                    align-items-center">
+
+            <span class="font-weight-bold">
+
+                <i class="fas fa-boxes text-primary mr-2"></i>
+
+                Chi tiết hàng hóa
+
+            </span>
+            </div>
+
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover mb-0">
+
+                        <thead class="thead-light">
+
+                        <tr>
+
+                            <th class="text-center">
+                                STT
+                            </th>
+
+                            <th>
+                                Tên hàng hóa
+                            </th>
+
+                            <th>
+                                Đơn vị
+                            </th>
+
+                            <th class="text-center">
+                                Số lượng
+                            </th>
+
+                            <th>
+                                Đơn giá
+                            </th>
+
+                            <th>
+                                Thành tiền
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        <tr th:each="detail, iterStat : *{deliveryNoteDetails}">
+
+                            <td th:text="${iterStat.count}">
+                                1
+                            </td>
+
+                            <td th:text="${detail.hangHoa.tenHangHoa}">
+                                Coca-Cola lon 330ml
+                            </td>
+
+                            <td th:text="${detail.hangHoa.donViTinh.tenDonViTinh}">
+                                Thùng
+                            </td>
+
+                            <td class="text-center" th:text="${detail.soLuong}">
+                                20
+                            </td>
+
+                            <td th:text="${#numbers.formatDecimal(detail.hangHoa.donGia, 0, 'POINT', 0, 'COMMA')}">
+                                120.000 đ
+                            </td>
+
+                            <td class="font-weight-bold"
+                                th:text="${#numbers.formatDecimal(detail.soLuong * detail.hangHoa.donGia, 0, 'POINT', 0, 'COMMA')}">
+                                2.400.000 đ
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row justify-content-end">
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                        <span class="font-weight-bold">
+                            Tổng tiền:
+                        </span>
+
+                            <span class="font-weight-bold text-danger h5 mb-0"
+                                  th:text="*{#numbers.formatDecimal(tongTien, 0, 'POINT', 0, 'COMMA')}">
+                            7.175.000 đ
+                        </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
+
+
+
+

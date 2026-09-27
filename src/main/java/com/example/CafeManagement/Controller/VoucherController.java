@@ -5,12 +5,15 @@ import com.example.CafeManagement.DTO.VoucherResponse;
 import com.example.CafeManagement.Entity.Merchandise;
 import com.example.CafeManagement.Entity.Unit;
 import com.example.CafeManagement.Entity.Voucher;
+import com.example.CafeManagement.Exception.InvalidDateException;
 import com.example.CafeManagement.Service.VoucherService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -47,10 +50,28 @@ public class VoucherController {
 
     @PostMapping("process-add")
     public String processAddMerchandise(
-            @ModelAttribute("voucher") Voucher voucher,
-            RedirectAttributes redirectAttributes
+            @Valid @ModelAttribute("voucher") Voucher voucher,
+            BindingResult  bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
-        voucherService.addVoucher(voucher);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("activeParent", "marketing");
+            model.addAttribute("activeChild", "marketing-add");
+            model.addAttribute("title", "Thêm khuyến mãi");
+            model.addAttribute("action", "add");
+            return "/voucher/voucherForm";
+        }
+        try{
+            voucherService.addVoucher(voucher);
+        }catch(InvalidDateException e){
+            bindingResult.rejectValue(e.getFieldName(), "error."+e.getFieldName(), e.getMessage());
+            model.addAttribute("activeParent", "marketing");
+            model.addAttribute("activeChild", "marketing-add");
+            model.addAttribute("title", "Thêm khuyến mãi");
+            model.addAttribute("action", "add");
+            return "/voucher/voucherForm";
+        }
         redirectAttributes.addFlashAttribute("successMessage", "Voucher created successfully");
         return "redirect:/manager/voucher/list";
     }

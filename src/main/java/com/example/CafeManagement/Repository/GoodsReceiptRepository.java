@@ -2,8 +2,9 @@ package com.example.CafeManagement.Repository;
 
 import com.example.CafeManagement.Entity.GoodsReceipt;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GoodsReceiptRepository extends JpaRepository<GoodsReceipt, String> {
+public interface GoodsReceiptRepository extends JpaRepository<GoodsReceipt, String>, JpaSpecificationExecutor<GoodsReceipt> {
 }

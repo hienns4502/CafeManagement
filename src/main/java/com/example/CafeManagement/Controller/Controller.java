@@ -1,12 +1,16 @@
 package com.example.CafeManagement.Controller;
 
+import com.example.CafeManagement.DTO.EmployeeUpdateRequest;
+import com.example.CafeManagement.DTO.EmployeeUpdateRequestUser;
 import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.Position;
 import com.example.CafeManagement.Service.EmployeeService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +31,7 @@ public class Controller {
     @GetMapping("")
     public String index(Model model) {
         model.addAttribute("activeParent", "trangChu");
-        return "index";
+        return "index2";
     }
 
     @GetMapping("/403")
@@ -54,10 +58,14 @@ public class Controller {
 
     @PostMapping("/profile-edit/process")
     public String prosessEditProfile(
-            @ModelAttribute Employee employee,
+            @Valid  @ModelAttribute("employee") EmployeeUpdateRequestUser employee,
+            BindingResult bindingResult,
             @RequestParam(value = "avatarFile", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes
     ) throws IOException {
+        if (bindingResult.hasErrors()) {
+            return "employee/editEmployee";
+        }
         employeeService.updateProfile(employee, file);
         redirectAttributes.addFlashAttribute("successMessage", "Updated successfully");
         return "redirect:/profile";

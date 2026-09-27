@@ -23,5 +23,7 @@ public class Merchandise {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "unit_id")
     Unit donViTinh;
-
+    @Version
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long version;
 }

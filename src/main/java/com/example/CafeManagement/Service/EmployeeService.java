@@ -1,6 +1,9 @@
 package com.example.CafeManagement.Service;
 
 import com.example.CafeManagement.Customize.CustomUserDetails;
+import com.example.CafeManagement.DTO.EmployeeCreateRequest;
+import com.example.CafeManagement.DTO.EmployeeUpdateRequest;
+import com.example.CafeManagement.DTO.EmployeeUpdateRequestUser;
 import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.Position;
 import com.example.CafeManagement.Mapper.EmployeeMapper;
@@ -49,7 +52,11 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public void createEmployee(Employee employee, String positionId, MultipartFile file) throws IOException {
+    public void createEmployee(EmployeeCreateRequest employeeCreateRequest, String positionId, MultipartFile file) throws IOException {
+        Employee employee = employeeMapper.toEmployee(employeeCreateRequest);
+        if(employeeRepository.existsByUsername(employee.getUsername())){
+            throw new RuntimeException("Username hoặc password đã tồn tại, vui lòng nhập username, password khác!");
+        }
         // mã hóa mk
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
@@ -79,10 +86,10 @@ public class EmployeeService {
     }
 
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #employee.getId() == principal.id")
-    public void updateEmployee(@Param("employee") Employee employee, String positionId, MultipartFile file) throws IOException {
+    public void updateEmployee(@Param("employee") EmployeeUpdateRequestUser employee, String positionId, MultipartFile file) throws IOException {
         String employeeId = employee.getId();
         Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Not Found"));
-        employeeMapper.updateEmployee(employee, foundEmployee);
+        employeeMapper.updateEmployeeUser(employee, foundEmployee);
         if (file != null && !file.isEmpty()) {
             Path path = Paths.get("F:\\OnTapSQL\\BaiLam\\QuanLyQuanCafe\\uploads");
             String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
@@ -116,12 +123,12 @@ public class EmployeeService {
         return employee;
     }
 
-    public void updateProfile(Employee employee, MultipartFile file) throws IOException {
+    public void updateProfile(EmployeeUpdateRequestUser employee, MultipartFile file) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String employeeId = customUserDetails.getId();
         Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Not Found"));
-        employeeMapper.updateEmployee(employee, foundEmployee);
+        employeeMapper.updateEmployeeUser(employee, foundEmployee);
         String fileName = saveFile(file);
         if(fileName != null){
             foundEmployee.setPathAvatar(fileName);

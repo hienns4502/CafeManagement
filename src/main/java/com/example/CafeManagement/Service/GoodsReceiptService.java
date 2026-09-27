@@ -2,7 +2,7 @@ package com.example.CafeManagement.Service;
 
 import com.example.CafeManagement.Customize.CustomUserDetails;
 import com.example.CafeManagement.DTO.GoodsReceiptDTO;
-import com.example.CafeManagement.DTO.GoodsReceiptDetailDTO;
+import com.example.CafeManagement.DTO.DocumentSearchCriteria;
 import com.example.CafeManagement.Entity.Employee;
 import com.example.CafeManagement.Entity.GoodsReceipt;
 import com.example.CafeManagement.Entity.GoodsReceiptMerchandiseDetail;
@@ -12,9 +12,11 @@ import com.example.CafeManagement.Mapper.GoodsReceiptMerchandiseDetailMapper;
 import com.example.CafeManagement.Repository.EmployeeRepository;
 import com.example.CafeManagement.Repository.GoodsReceiptRepository;
 import com.example.CafeManagement.Repository.MerchandiseRepository;
+import com.example.CafeManagement.Util.DocumentSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -71,5 +73,19 @@ public class GoodsReceiptService {
             merchandise.setSoLuong(merchandise.getSoLuong() + detail.getSoLuong());
             merchandiseRepository.save(merchandise);
         });
+    }
+
+    public List<GoodsReceipt> getGoodListsReceipt() {
+        return goodsReceiptRepository.findAll();
+    }
+
+    public List<GoodsReceipt> searchGoodLists(DocumentSearchCriteria criteria) {
+        Specification<GoodsReceipt> spec = DocumentSpecification.filterByCriteria(criteria);
+        return goodsReceiptRepository.findAll(spec);
+    }
+
+    public GoodsReceipt getGoodsReceiptById(String id) {
+        GoodsReceipt foundGoodsReceipt = goodsReceiptRepository.findById(id).orElseThrow(() -> new RuntimeException("GoodsReceipt not found"));
+        return foundGoodsReceipt;
     }
 }

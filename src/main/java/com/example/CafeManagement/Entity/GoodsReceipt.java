@@ -3,6 +3,7 @@ package com.example.CafeManagement.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,6 +19,7 @@ public class GoodsReceipt {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     LocalDateTime ngayNhap;
     Long tongTien;
     @ManyToOne(fetch = FetchType.LAZY)

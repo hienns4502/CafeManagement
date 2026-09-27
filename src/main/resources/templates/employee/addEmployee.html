@@ -35,12 +35,14 @@
                                             <label class="form-col-label col-3 text-left">Họ và tên</label>
                                             <div class="col-9">
                                                 <input type="text" class="form-control" th:field="*{hoTen}" required>
+                                                <small class="text-danger text-sm" th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}"></small>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label class="form-col-label col-3 text-left">Địa chỉ</label>
                                             <div class="col-9">
                                                 <input type="text" class="form-control" th:field="*{diaChi}" required>
+                                                <small class="text-danger text-sm" th:if="${#fields.hasErrors('diaChi')}" th:errors="*{diaChi}"></small>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -48,6 +50,7 @@
                                             <div class="col-9">
                                                 <input type="text" class="form-control" th:field="*{soDienThoai}"
                                                        required>
+                                                <small class="text-danger text-sm" th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}"></small>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -55,13 +58,15 @@
                                             <div class="col-9">
                                                 <input type="text" class="form-control" th:field="*{username}" required
                                                        minlength="4">
+                                                <small class="text-danger text-sm" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label class="form-col-label col-3 text-left">Mật khẩu</label>
                                             <div class="col-9">
                                                 <input type="password" class="form-control" th:field="*{password}"
-                                                       minlength="4" required>
+                                                       minlength="4" required data-toggle="tooltip" data-html="true" title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">
+                                                <small class="text-danger text-sm" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
                                             </div>
                                         </div>
                                         <div class="form-group row">

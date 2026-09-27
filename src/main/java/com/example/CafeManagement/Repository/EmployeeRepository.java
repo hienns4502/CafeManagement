@@ -14,4 +14,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     List<Employee> findAllWithChucVu();
 
     List<Employee> findByHoTenContainingIgnoreCase(String hoTen);
+
+    boolean existsByUsername(String username);
 }

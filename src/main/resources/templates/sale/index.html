@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coffee Shop POS</title>
+    <!-- Bootstrap 4 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background: #f5f6f8;
+      }
+      .table-card {
+        cursor: pointer;
+        transition: 0.2s;
+        min-height: 130px;
+      }
+      .table-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+      .table-icon {
+        font-size: 32px;
+      }
+      .status-empty {
+        border-left: 5px solid #28a745;
+      }
+      .status-reserved {
+        border-left: 5px solid #ffc107;
+      }
+      .status-using {
+        border-left: 5px solid #007bff;
+      }
+      .status-payment {
+        border-left: 5px solid #dc3545;
+      }
+      .menu-item {
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .menu-item:hover {
+        background: #f8f9fa;
+      }
+      .menu-item:active {
+        background: #e9ecef;
+      }
+      .order-item {
+        border-bottom: 1px solid #eee;
+      }
+      .order-item:last-child {
+        border-bottom: none;
+      }
+      .category-btn.active {
+        background-color: #007bff;
+        color: white;
+      }
+      .modal-xl {
+        max-width: 1200px;
+      }
+      .order-modal-left {
+        border-right: 1px solid #dee2e6;
+      }
+      .receipt-content {
+        font-family: monospace;
+      }
+      @media (max-width: 767px) {
+        .order-modal-left {
+          border-right: none;
+          border-bottom: 1px solid #dee2e6;
+          margin-bottom: 15px;
+          padding-bottom: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =========================================================
+     NAVBAR
+========================================================= -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <span class="navbar-brand font-weight-bold"> ☕ Coffee Shop POS </span>
+        <div class="text-white">
+          <span class="mr-3"> Nhân viên: <strong>Nguyễn Văn A</strong> </span>
+          <button
+            class="btn btn-outline-light btn-sm"
+            onclick="alert('Đăng xuất demo')"
+          >
+            Đăng xuất
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- =========================================================
+     MAIN
+========================================================= -->
+    <div class="container-fluid mt-4">
+      <!-- Header -->
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <h4 class="font-weight-bold mb-1">Sơ đồ bàn</h4>
+          <small class="text-muted"> Chọn bàn để mở order </small>
+        </div>
+        <div class="col-md-4 text-md-right mt-3 mt-md-0">
+          <button class="btn btn-warning" onclick="showReservations()">
+            📅 Bàn đã đặt
+            <span class="badge badge-dark" id="reservationCount"> 0 </span>
+          </button>
+        </div>
+      </div>
+      <!-- =====================================================
+         STATUS
+    ====================================================== -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="d-flex flex-wrap">
+            <div class="mr-4 mb-2">
+              <span class="badge badge-success"> &nbsp; </span>
+              Trống
+            </div>
+            <div class="mr-4 mb-2">
+              <span class="badge badge-warning"> &nbsp; </span>
+              Đã đặt
+            </div>
+            <div class="mr-4 mb-2">
+              <span class="badge badge-primary"> &nbsp; </span>
+              Đang sử dụng
+            </div>
+            <div class="mr-4 mb-2">
+              <span class="badge badge-danger"> &nbsp; </span>
+              Chờ thanh toán
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- =====================================================
+         TABLE LIST
+    ====================================================== -->
+      <div class="row" id="tableContainer">
+        <!-- JS render -->
+      </div>
+    </div>
+    <!-- =========================================================
+     ORDER MODAL
+========================================================= -->
+    <div class="modal fade" id="orderModal" tabindex="-1" role="dialog">
+      <div
+        class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+        role="document"
+      >
+        <div class="modal-content">
+          <!-- HEADER -->
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title font-weight-bold" id="orderTableTitle">
+                Bàn 1
+              </h5>
+              <small class="text-muted" id="orderTableStatus"> Trống </small>
+            </div>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <!-- BODY -->
+          <div class="modal-body">
+            <div class="row">
+              <!-- =================================================
+                         LEFT - MENU
+                    ================================================== -->
+              <div class="col-md-7 order-modal-left">
+                <!-- Reserved alert -->
+                <div id="reservedBox" class="alert alert-warning d-none">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <strong> 📅 Bàn này đã được đặt </strong>
+                      <div class="small mt-1" id="reservedInfo"></div>
+                    </div>
+                    <button
+                      class="btn btn-success"
+                      onclick="receiveSelectedTable()"
+                    >
+                      ✓ Nhận bàn
+                    </button>
+                  </div>
+                </div>
+                <!-- Customer -->
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div class="form-row align-items-end">
+                      <div class="col-md-6">
+                        <label class="font-weight-bold"> Số khách </label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="customerCount"
+                          min="1"
+                          value="1"
+                          onchange="changeCustomerCount(this.value)"
+                        />
+                      </div>
+                      <div class="col-md-6 mt-3 mt-md-0">
+                        <button
+                          class="btn btn-outline-secondary btn-block"
+                          onclick="clearCustomerCount()"
+                        >
+                          Xóa số khách
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Categories -->
+                <div
+                  class="btn-group btn-group-sm flex-wrap mb-3"
+                  id="categoryContainer"
+                >
+                  <!-- JS -->
+                </div>
+                <!-- Menu -->
+                <div class="list-group" id="menuContainer">
+                  <!-- JS -->
+                </div>
+              </div>
+              <!-- =================================================
+                         RIGHT - ORDER
+                    ================================================== -->
+              <div class="col-md-5">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h6 class="font-weight-bold mb-0">Chi tiết order</h6>
+                  <span class="badge badge-secondary" id="orderItemCount">
+                    0 món
+                  </span>
+                </div>
+                <!-- Order list -->
+                <div id="orderContainer" class="mb-3">
+                  <!-- JS -->
+                </div>
+                <!-- Empty -->
+                <div id="emptyOrder" class="text-center text-muted py-5">
+                  Chưa có món nào
+                </div>
+                <!-- Summary -->
+                <div class="border-top pt-3">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span> Tạm tính </span>
+                    <strong id="subtotal"> 0 ₫ </strong>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span> Giảm giá </span>
+                    <strong id="discount"> 0 ₫ </strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <strong class="h5 mb-0"> Tổng tiền </strong>
+                    <strong class="h5 text-danger mb-0" id="totalAmount">
+                      0 ₫
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- FOOTER -->
+          <div class="modal-footer">
+            <button
+              class="btn btn-outline-secondary"
+              onclick="openTransferModal()"
+            >
+              ⇄ Chuyển bàn
+            </button>
+            <button class="btn btn-outline-info" onclick="openMergeModal()">
+              ⊕ Gộp bàn
+            </button>
+            <button class="btn btn-outline-warning" onclick="openSplitModal()">
+              ⇆ Tách bàn
+            </button>
+            <button class="btn btn-outline-danger" onclick="clearOrder()">
+              🗑 Xóa order
+            </button>
+            <button class="btn btn-primary" onclick="openPaymentModal()">
+              💳 Thanh toán
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     RESERVATION MODAL
+========================================================= -->
+    <div class="modal fade" id="reservationModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title font-weight-bold">
+              📅 Danh sách bàn đã đặt
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="reservationContainer">
+              <!-- JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     PAYMENT MODAL
+========================================================= -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">💳 Thanh toán</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center mb-4">
+              <small class="text-muted"> Tổng tiền </small>
+              <div class="h2 font-weight-bold text-danger" id="paymentTotal">
+                0 ₫
+              </div>
+            </div>
+            <label class="font-weight-bold"> Phương thức thanh toán </label>
+            <div class="form-group">
+              <div class="custom-control custom-radio mb-2">
+                <input
+                  type="radio"
+                  id="cash"
+                  name="paymentMethod"
+                  class="custom-control-input"
+                  value="cash"
+                  checked
+                />
+                <label class="custom-control-label" for="cash">
+                  💵 Tiền mặt
+                </label>
+              </div>
+              <div class="custom-control custom-radio mb-2">
+                <input
+                  type="radio"
+                  id="bank"
+                  name="paymentMethod"
+                  class="custom-control-input"
+                  value="bank"
+                />
+                <label class="custom-control-label" for="bank">
+                  🏦 Chuyển khoản
+                </label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input
+                  type="radio"
+                  id="card"
+                  name="paymentMethod"
+                  class="custom-control-input"
+                  value="card"
+                />
+                <label class="custom-control-label" for="card"> 💳 Thẻ </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button class="btn btn-success" onclick="processPayment()">
+              Xác nhận thanh toán
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     TRANSFER MODAL
+========================================================= -->
+    <div class="modal fade" id="transferModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">⇄ Chuyển bàn</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Chuyển order từ
+              <strong id="transferFrom"></strong>
+              sang:
+            </p>
+            <select class="form-control" id="transferTo"></select>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button class="btn btn-primary" onclick="transferTable()">
+              Xác nhận
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     MERGE MODAL
+========================================================= -->
+    <div class="modal fade" id="mergeModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">⊕ Gộp bàn</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Gộp bàn hiện tại
+              <strong id="mergeFrom"></strong>
+              với:
+            </p>
+            <select class="form-control" id="mergeTo"></select>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button class="btn btn-info" onclick="mergeTable()">
+              Xác nhận gộp
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     SPLIT MODAL
+========================================================= -->
+    <div class="modal fade" id="splitModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">⇆ Tách bàn</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Chọn bàn mới để tách một phần order:</p>
+            <select class="form-control mb-3" id="splitTo"></select>
+            <div class="alert alert-info mb-0">
+              Demo: thao tác này sẽ tạo một order mới trên bàn được chọn.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button class="btn btn-warning" onclick="splitTable()">
+              Xác nhận tách
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     RECEIPT MODAL
+========================================================= -->
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+      <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">🧾 Hóa đơn</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="receiptContent" class="receipt-content"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary btn-block" onclick="window.print()">
+              🖨 In hóa đơn
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      /* =========================================================
+       MOCK DATA
+    ========================================================= */
+      const tables = [
+        {
+          id: 1,
+          name: "Bàn 1",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 2,
+          name: "Bàn 2",
+          status: "USING",
+          customerCount: 2,
+          order: [
+            { menuId: 1, quantity: 2 },
+            { menuId: 4, quantity: 1 },
+          ],
+        },
+        {
+          id: 3,
+          name: "Bàn 3",
+          status: "RESERVED",
+          customerCount: 4,
+          reservation: {
+            customerName: "Nguyễn Văn Bình",
+            phone: "0901234567",
+            time: "18:30",
+          },
+          order: [],
+        },
+        {
+          id: 4,
+          name: "Bàn 4",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 5,
+          name: "Bàn 5",
+          status: "USING",
+          customerCount: 3,
+          order: [
+            { menuId: 2, quantity: 2 },
+            { menuId: 5, quantity: 1 },
+          ],
+        },
+        {
+          id: 6,
+          name: "Bàn 6",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 7,
+          name: "Bàn 7",
+          status: "RESERVED",
+          customerCount: 2,
+          reservation: {
+            customerName: "Trần Minh Anh",
+            phone: "0912345678",
+            time: "19:00",
+          },
+          order: [],
+        },
+        {
+          id: 8,
+          name: "Bàn 8",
+          status: "PAYMENT",
+          customerCount: 2,
+          order: [
+            { menuId: 1, quantity: 1 },
+            { menuId: 3, quantity: 2 },
+          ],
+        },
+        {
+          id: 9,
+          name: "Bàn 9",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 10,
+          name: "Bàn 10",
+          status: "USING",
+          customerCount: 4,
+          order: [{ menuId: 6, quantity: 2 }],
+        },
+        {
+          id: 11,
+          name: "Bàn 11",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 12,
+          name: "Bàn 12",
+          status: "RESERVED",
+          customerCount: 5,
+          reservation: {
+            customerName: "Lê Hoàng Nam",
+            phone: "0987654321",
+            time: "20:00",
+          },
+          order: [],
+        },
+        {
+          id: 13,
+          name: "Bàn 13",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+        {
+          id: 14,
+          name: "Bàn 14",
+          status: "USING",
+          customerCount: 2,
+          order: [{ menuId: 7, quantity: 1 }],
+        },
+        {
+          id: 15,
+          name: "Bàn 15",
+          status: "EMPTY",
+          customerCount: 0,
+          order: [],
+        },
+      ];
+      const menu = [
+        {
+          id: 1,
+          name: "Cà phê đen",
+          price: 25000,
+          category: "coffee",
+        },
+        {
+          id: 2,
+          name: "Cà phê sữa",
+          price: 30000,
+          category: "coffee",
+        },
+        {
+          id: 3,
+          name: "Bạc xỉu",
+          price: 35000,
+          category: "coffee",
+        },
+        {
+          id: 4,
+          name: "Trà đào",
+          price: 35000,
+          category: "tea",
+        },
+        {
+          id: 5,
+          name: "Trà chanh",
+          price: 25000,
+          category: "tea",
+        },
+        {
+          id: 6,
+          name: "Matcha Latte",
+          price: 45000,
+          category: "milk",
+        },
+        {
+          id: 7,
+          name: "Chocolate",
+          price: 40000,
+          category: "milk",
+        },
+        {
+          id: 8,
+          name: "Sinh tố xoài",
+          price: 45000,
+          category: "smoothie",
+        },
+        {
+          id: 9,
+          name: "Sinh tố dâu",
+          price: 45000,
+          category: "smoothie",
+        },
+        {
+          id: 10,
+          name: "Nước cam",
+          price: 40000,
+          category: "juice",
+        },
+        {
+          id: 11,
+          name: "Nước ép dưa hấu",
+          price: 35000,
+          category: "juice",
+        },
+        {
+          id: 12,
+          name: "Bánh tiramisu",
+          price: 50000,
+          category: "cake",
+        },
+      ];
+      const categories = [
+        {
+          id: "all",
+          name: "Tất cả",
+        },
+        {
+          id: "coffee",
+          name: "Cà phê",
+        },
+        {
+          id: "tea",
+          name: "Trà",
+        },
+        {
+          id: "milk",
+          name: "Đá xay",
+        },
+        {
+          id: "smoothie",
+          name: "Sinh tố",
+        },
+        {
+          id: "juice",
+          name: "Nước ép",
+        },
+        {
+          id: "cake",
+          name: "Bánh",
+        },
+      ];
+      /* =========================================================
+       GLOBAL STATE
+    ========================================================= */
+      let selectedTableId = null;
+      let selectedCategory = "all";
+      /* =========================================================
+       FORMAT MONEY
+    ========================================================= */
+      function formatMoney(number) {
+        return new Intl.NumberFormat("vi-VN").format(number) + " ₫";
+      }
+      /* =========================================================
+       GET TABLE
+    ========================================================= */
+      function getSelectedTable() {
+        return tables.find((table) => table.id === selectedTableId);
+      }
+      /* =========================================================
+       STATUS
+    ========================================================= */
+      function getStatusText(status) {
+        switch (status) {
+          case "EMPTY":
+            return "Trống";
+          case "RESERVED":
+            return "Đã đặt";
+          case "USING":
+            return "Đang sử dụng";
+          case "PAYMENT":
+            return "Chờ thanh toán";
+          default:
+            return "";
+        }
+      }
+      function getStatusClass(status) {
+        switch (status) {
+          case "EMPTY":
+            return "status-empty";
+          case "RESERVED":
+            return "status-reserved";
+          case "USING":
+            return "status-using";
+          case "PAYMENT":
+            return "status-payment";
+          default:
+            return "";
+        }
+      }
+      function getStatusBadge(status) {
+        switch (status) {
+          case "EMPTY":
+            return "badge-success";
+          case "RESERVED":
+            return "badge-warning";
+          case "USING":
+            return "badge-primary";
+          case "PAYMENT":
+            return "badge-danger";
+          default:
+            return "badge-secondary";
+        }
+      }
+      /* =========================================================
+       RENDER TABLES
+    ========================================================= */
+      function renderTables() {
+        const container = document.getElementById("tableContainer");
+        container.innerHTML = "";
+        tables.forEach((table) => {
+          const total = calculateTableTotal(table);
+          const col = document.createElement("div");
+          col.className = "col-6 col-md-4 col-lg-3 col-xl-2 mb-4";
+          col.innerHTML = `
+                <div
+                    class="card table-card ${getStatusClass(table.status)}"
+                    onclick="selectTable(${table.id})"
+                >
+                    <div class="card-body text-center">
+                        <div class="table-icon mb-2">
+                            ${getTableIcon(table.status)}
+                        </div>
+                        <h5 class="font-weight-bold mb-2">
+                            ${table.name}
+                        </h5>
+                        <span class="badge ${getStatusBadge(table.status)}">
+                            ${getStatusText(table.status)}
+                        </span>
+                        ${
+                          table.customerCount > 0
+                            ? `
+                                <div class="small text-muted mt-2">
+                                    👥 ${table.customerCount} khách
+                                </div>
+                            `
+                            : ""
+                        }
+                        ${
+                          total > 0
+                            ? `
+                                <div class="small text-danger font-weight-bold mt-1">
+                                    ${formatMoney(total)}
+                                </div>
+                            `
+                            : ""
+                        }
+                    </div>
+                </div>
+            `;
+          container.appendChild(col);
+        });
+        renderReservationCount();
+      }
+      function getTableIcon(status) {
+        switch (status) {
+          case "EMPTY":
+            return "🪑";
+          case "RESERVED":
+            return "📅";
+          case "USING":
+            return "☕";
+          case "PAYMENT":
+            return "💳";
+          default:
+            return "🪑";
+        }
+      }
+      /* =========================================================
+       SELECT TABLE
+    ========================================================= */
+      function selectTable(id) {
+        selectedTableId = id;
+        selectedCategory = "all";
+        renderOrder();
+        renderCategories();
+        renderMenu();
+        $("#orderModal").modal("show");
+      }
+      /* =========================================================
+       RENDER ORDER
+    ========================================================= */
+      function renderOrder() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        document.getElementById("orderTableTitle").innerText = table.name;
+        document.getElementById("orderTableStatus").innerText = getStatusText(
+          table.status,
+        );
+        document.getElementById("customerCount").value =
+          table.customerCount || 1;
+        /* RESERVED */
+        const reservedBox = document.getElementById("reservedBox");
+        if (table.status === "RESERVED") {
+          reservedBox.classList.remove("d-none");
+          document.getElementById("reservedInfo").innerHTML = `
+                Khách:
+                <strong>
+                    ${table.reservation.customerName}
+                </strong>
+                &nbsp; | &nbsp;
+                SĐT:
+                ${table.reservation.phone}
+                &nbsp; | &nbsp;
+                Giờ:
+                ${table.reservation.time}
+            `;
+        } else {
+          reservedBox.classList.add("d-none");
+        }
+        /* ORDER */
+        const orderContainer = document.getElementById("orderContainer");
+        const emptyOrder = document.getElementById("emptyOrder");
+        orderContainer.innerHTML = "";
+        if (!table.order || table.order.length === 0) {
+          emptyOrder.classList.remove("d-none");
+          document.getElementById("orderItemCount").innerText = "0 món";
+        } else {
+          emptyOrder.classList.add("d-none");
+          let itemCount = 0;
+          table.order.forEach((item) => {
+            const product = menu.find((m) => m.id === item.menuId);
+            if (!product) {
+              return;
+            }
+            itemCount += item.quantity;
+            const row = document.createElement("div");
+            row.className = "order-item py-3";
+            row.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div class="pr-2">
+                            <div class="font-weight-bold">
+                                ${product.name}
+                            </div>
+                            <small class="text-muted">
+                                ${formatMoney(product.price)}
+                            </small>
+                        </div>
+                        <div class="text-right">
+                            <div
+                                class="btn-group btn-group-sm mb-1"
+                            >
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    onclick="changeQuantity(${product.id}, -1)"
+                                >
+                                    −
+                                </button>
+                                <button
+                                    class="btn btn-light"
+                                    disabled
+                                >
+                                    ${item.quantity}
+                                </button>
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    onclick="changeQuantity(${product.id}, 1)"
+                                >
+                                    +
+                                </button>
+                            </div>
+                            <div class="font-weight-bold text-danger">
+                                ${formatMoney(product.price * item.quantity)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            orderContainer.appendChild(row);
+          });
+          document.getElementById("orderItemCount").innerText =
+            itemCount + " món";
+        }
+        renderTotal();
+      }
+      /* =========================================================
+       RENDER CATEGORY
+    ========================================================= */
+      function renderCategories() {
+        const container = document.getElementById("categoryContainer");
+        container.innerHTML = "";
+        categories.forEach((category) => {
+          const button = document.createElement("button");
+          button.className = "btn btn-outline-primary category-btn mr-1 mb-1";
+          if (category.id === selectedCategory) {
+            button.classList.add("active");
+          }
+          button.innerText = category.name;
+          button.onclick = function () {
+            selectedCategory = category.id;
+            renderCategories();
+            renderMenu();
+          };
+          container.appendChild(button);
+        });
+      }
+      /* =========================================================
+       RENDER MENU
+    ========================================================= */
+      function renderMenu() {
+        const container = document.getElementById("menuContainer");
+        container.innerHTML = "";
+        const filteredMenu =
+          selectedCategory === "all"
+            ? menu
+            : menu.filter((item) => item.category === selectedCategory);
+        filteredMenu.forEach((product) => {
+          const item = document.createElement("div");
+          item.className = "list-group-item list-group-item-action menu-item";
+          item.onclick = function () {
+            addMenuItem(product.id);
+          };
+          item.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="font-weight-bold">
+                            ${product.name}
+                        </div>
+                        <small class="text-muted">
+                            ${getCategoryName(product.category)}
+                        </small>
+                    </div>
+                    <strong class="text-primary">
+                        ${formatMoney(product.price)}
+                    </strong>
+                </div>
+            `;
+          container.appendChild(item);
+        });
+      }
+      function getCategoryName(category) {
+        const item = categories.find((c) => c.id === category);
+        return item ? item.name : "";
+      }
+      /* =========================================================
+       ADD MENU ITEM
+    ========================================================= */
+      function addMenuItem(menuId) {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        /* Không cho gọi món khi bàn chưa nhận */
+        if (table.status === "RESERVED") {
+          alert("Vui lòng nhận bàn trước khi gọi món.");
+          return;
+        }
+        if (table.status === "EMPTY") {
+          table.status = "USING";
+        }
+        if (!table.order) {
+          table.order = [];
+        }
+        const existing = table.order.find((item) => item.menuId === menuId);
+        if (existing) {
+          existing.quantity++;
+        } else {
+          table.order.push({
+            menuId: menuId,
+            quantity: 1,
+          });
+        }
+        renderOrder();
+        renderTables();
+      }
+      /* =========================================================
+       CHANGE QUANTITY
+    ========================================================= */
+      function changeQuantity(menuId, amount) {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        const item = table.order.find((item) => item.menuId === menuId);
+        if (!item) {
+          return;
+        }
+        item.quantity += amount;
+        if (item.quantity <= 0) {
+          table.order = table.order.filter((item) => item.menuId !== menuId);
+        }
+        renderOrder();
+        renderTables();
+      }
+      /* =========================================================
+       CUSTOMER COUNT
+    ========================================================= */
+      function changeCustomerCount(value) {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        let count = parseInt(value);
+        if (isNaN(count) || count < 1) {
+          count = 1;
+        }
+        table.customerCount = count;
+        document.getElementById("customerCount").value = count;
+        renderTables();
+      }
+      function clearCustomerCount() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        table.customerCount = 0;
+        document.getElementById("customerCount").value = 0;
+        renderTables();
+      }
+      /* =========================================================
+       CALCULATE TOTAL
+    ========================================================= */
+      function calculateTableTotal(table) {
+        if (!table || !table.order) {
+          return 0;
+        }
+        return table.order.reduce((total, item) => {
+          const product = menu.find((m) => m.id === item.menuId);
+          if (!product) {
+            return total;
+          }
+          return total + product.price * item.quantity;
+        }, 0);
+      }
+      function renderTotal() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        const subtotal = calculateTableTotal(table);
+        const discount = 0;
+        const total = subtotal - discount;
+        document.getElementById("subtotal").innerText = formatMoney(subtotal);
+        document.getElementById("discount").innerText = formatMoney(discount);
+        document.getElementById("totalAmount").innerText = formatMoney(total);
+      }
+      /* =========================================================
+       RECEIVE RESERVED TABLE
+    ========================================================= */
+      function receiveSelectedTable() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        if (table.status !== "RESERVED") {
+          return;
+        }
+        table.status = "USING";
+        if (!table.customerCount) {
+          table.customerCount = 1;
+        }
+        /* Xóa thông tin reservation */
+        table.reservation = null;
+        renderTables();
+        renderOrder();
+        alert(table.name + " đã được nhận bàn.");
+      }
+      /* =========================================================
+       RESERVATION
+    ========================================================= */
+      function renderReservationCount() {
+        const count = tables.filter(
+          (table) => table.status === "RESERVED",
+        ).length;
+        document.getElementById("reservationCount").innerText = count;
+      }
+      function showReservations() {
+        renderReservations();
+        $("#reservationModal").modal("show");
+      }
+      function renderReservations() {
+        const container = document.getElementById("reservationContainer");
+        const reservedTables = tables.filter(
+          (table) => table.status === "RESERVED",
+        );
+        if (reservedTables.length === 0) {
+          container.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    Không có bàn nào đang được đặt.
+                </div>
+            `;
+          return;
+        }
+        container.innerHTML = "";
+        reservedTables.forEach((table) => {
+          const div = document.createElement("div");
+          div.className = "card mb-3";
+          div.innerHTML = `
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <h5 class="font-weight-bold">
+                                ${table.name}
+                            </h5>
+                            <span class="badge badge-warning">
+                                Đã đặt
+                            </span>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div>
+                                👤
+                                <strong>
+                                    ${table.reservation.customerName}
+                                </strong>
+                            </div>
+                            <div>
+                                ☎
+                                ${table.reservation.phone}
+                            </div>
+                            <div>
+                                🕐
+                                ${table.reservation.time}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-3 mt-md-0">
+                            <button
+                                class="btn btn-success btn-block"
+                                onclick="receiveReservation(${table.id})"
+                            >
+                                ✓ Nhận bàn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+          container.appendChild(div);
+        });
+      }
+      function receiveReservation(id) {
+        selectedTableId = id;
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        table.status = "USING";
+        table.reservation = null;
+        if (!table.customerCount) {
+          table.customerCount = 1;
+        }
+        $("#reservationModal").modal("hide");
+        renderTables();
+        renderOrder();
+        renderCategories();
+        renderMenu();
+        $("#orderModal").modal("show");
+      }
+      /* =========================================================
+       CLEAR ORDER
+    ========================================================= */
+      function clearOrder() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        if (
+          !confirm("Bạn có chắc muốn xóa toàn bộ order của " + table.name + "?")
+        ) {
+          return;
+        }
+        table.order = [];
+        table.customerCount = 0;
+        table.status = "EMPTY";
+        renderTables();
+        renderOrder();
+      }
+      /* =========================================================
+       PAYMENT
+    ========================================================= */
+      function openPaymentModal() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        if (!table.order || table.order.length === 0) {
+          alert("Order chưa có món.");
+          return;
+        }
+        const total = calculateTableTotal(table);
+        document.getElementById("paymentTotal").innerText = formatMoney(total);
+        $("#paymentModal").modal("show");
+      }
+      function processPayment() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        const method = document.querySelector(
+          'input[name="paymentMethod"]:checked',
+        ).value;
+        const methodName = {
+          cash: "Tiền mặt",
+          bank: "Chuyển khoản",
+          card: "Thẻ",
+        }[method];
+        const total = calculateTableTotal(table);
+        table.status = "EMPTY";
+        table.order = [];
+        table.customerCount = 0;
+        $("#paymentModal").modal("hide");
+        $("#orderModal").modal("hide");
+        renderTables();
+        alert(
+          "Thanh toán thành công!\n\n" +
+            "Bàn: " +
+            table.name +
+            "\n" +
+            "Số tiền: " +
+            formatMoney(total) +
+            "\n" +
+            "Phương thức: " +
+            methodName,
+        );
+        showReceipt(table.name, total, methodName);
+      }
+      /* =========================================================
+       RECEIPT
+    ========================================================= */
+      function showReceipt(tableName, total, method) {
+        document.getElementById("receiptContent").innerHTML = `
+            <div class="text-center">
+                <strong>
+                    COFFEE SHOP
+                </strong>
+                <br>
+                -------------------------
+            </div>
+            Bàn: ${tableName}
+            <br>
+            Thời gian:
+            ${new Date().toLocaleString("vi-VN")}
+            <br><br>
+            Tổng tiền:
+            ${formatMoney(total)}
+            <br>
+            Thanh toán:
+            ${method}
+            <br><br>
+            <div class="text-center">
+                Cảm ơn quý khách!
+            </div>
+        `;
+        $("#receiptModal").modal("show");
+      }
+      /* =========================================================
+       TRANSFER TABLE
+    ========================================================= */
+      function openTransferModal() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        document.getElementById("transferFrom").innerText = table.name;
+        const select = document.getElementById("transferTo");
+        select.innerHTML = "";
+        tables
+          .filter((t) => t.id !== table.id && t.status === "EMPTY")
+          .forEach((t) => {
+            const option = document.createElement("option");
+            option.value = t.id;
+            option.innerText = t.name;
+            select.appendChild(option);
+          });
+        if (select.options.length === 0) {
+          alert("Không có bàn trống để chuyển.");
+          return;
+        }
+        $("#transferModal").modal("show");
+      }
+      function transferTable() {
+        const from = getSelectedTable();
+        const toId = parseInt(document.getElementById("transferTo").value);
+        const to = tables.find((t) => t.id === toId);
+        if (!from || !to) {
+          return;
+        }
+        to.order = from.order;
+        to.customerCount = from.customerCount;
+        to.status = from.status === "PAYMENT" ? "PAYMENT" : "USING";
+        from.order = [];
+        from.customerCount = 0;
+        from.status = "EMPTY";
+        selectedTableId = to.id;
+        $("#transferModal").modal("hide");
+        renderTables();
+        renderOrder();
+        alert("Đã chuyển order từ " + from.name + " sang " + to.name);
+      }
+      /* =========================================================
+       MERGE TABLE
+    ========================================================= */
+      function openMergeModal() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        document.getElementById("mergeFrom").innerText = table.name;
+        const select = document.getElementById("mergeTo");
+        select.innerHTML = "";
+        tables
+          .filter(
+            (t) =>
+              t.id !== table.id &&
+              (t.status === "USING" || t.status === "PAYMENT"),
+          )
+          .forEach((t) => {
+            const option = document.createElement("option");
+            option.value = t.id;
+            option.innerText = t.name;
+            select.appendChild(option);
+          });
+        if (select.options.length === 0) {
+          alert("Không có bàn đang sử dụng để gộp.");
+          return;
+        }
+        $("#mergeModal").modal("show");
+      }
+      function mergeTable() {
+        const from = getSelectedTable();
+        const toId = parseInt(document.getElementById("mergeTo").value);
+        const to = tables.find((t) => t.id === toId);
+        if (!from || !to) {
+          return;
+        }
+        if (!to.order) {
+          to.order = [];
+        }
+        from.order.forEach((sourceItem) => {
+          const targetItem = to.order.find(
+            (item) => item.menuId === sourceItem.menuId,
+          );
+          if (targetItem) {
+            targetItem.quantity += sourceItem.quantity;
+          } else {
+            to.order.push({
+              menuId: sourceItem.menuId,
+              quantity: sourceItem.quantity,
+            });
+          }
+        });
+        to.customerCount = (to.customerCount || 0) + (from.customerCount || 0);
+        to.status = "USING";
+        from.order = [];
+        from.customerCount = 0;
+        from.status = "EMPTY";
+        selectedTableId = to.id;
+        $("#mergeModal").modal("hide");
+        renderTables();
+        renderOrder();
+        alert("Đã gộp " + from.name + " vào " + to.name);
+      }
+      /* =========================================================
+       SPLIT TABLE
+    ========================================================= */
+      function openSplitModal() {
+        const table = getSelectedTable();
+        if (!table) {
+          return;
+        }
+        if (!table.order || table.order.length < 2) {
+          alert("Order cần ít nhất 2 món để tách bàn.");
+          return;
+        }
+        const select = document.getElementById("splitTo");
+        select.innerHTML = "";
+        tables
+          .filter((t) => t.id !== table.id && t.status === "EMPTY")
+          .forEach((t) => {
+            const option = document.createElement("option");
+            option.value = t.id;
+            option.innerText = t.name;
+            select.appendChild(option);
+          });
+        if (select.options.length === 0) {
+          alert("Không có bàn trống để tách.");
+          return;
+        }
+        $("#splitModal").modal("show");
+      }
+      function splitTable() {
+        const from = getSelectedTable();
+        const toId = parseInt(document.getElementById("splitTo").value);
+        const to = tables.find((t) => t.id === toId);
+        if (!from || !to) {
+          return;
+        }
+        /*
+         * Demo:
+         * chuyển món cuối cùng sang bàn mới.
+         *
+         * Khi làm Spring Boot có thể thay bằng
+         * màn hình cho người dùng chọn từng món.
+         */
+        const movedItem = from.order.pop();
+        to.order = [movedItem];
+        to.status = "USING";
+        to.customerCount = 1;
+        renderTables();
+        renderOrder();
+        $("#splitModal").modal("hide");
+        alert(
+          "Đã tách món " + getMenuName(movedItem.menuId) + " sang " + to.name,
+        );
+      }
+      function getMenuName(menuId) {
+        const item = menu.find((m) => m.id === menuId);
+        return item ? item.name : "";
+      }
+      /* =========================================================
+       INITIALIZE
+    ========================================================= */
+      function init() {
+        renderTables();
+        renderCategories();
+        renderMenu();
+      }
+      init();
+    </script>
+  </body>
+</html>
